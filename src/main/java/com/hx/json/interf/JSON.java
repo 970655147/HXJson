@@ -30,6 +30,16 @@ public interface JSON {
     Object value();
 
     /**
+     * 获取当前JSON是否是数组
+     *
+     * @return true if there are no element in currentStartIdx JSON
+     * @author Jerry.X.He
+     * @date 4/15/2017 11:46 AM
+     * @since 1.0
+     */
+    boolean isArray();
+
+    /**
      * 获取当前JSON是否为空
      *
      * @return true if there are no element in currentStartIdx JSON

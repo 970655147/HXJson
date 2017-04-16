@@ -16,7 +16,7 @@ import java.util.*;
  * @version 1.0
  * @date 4/15/2017 11:50 AM
  */
-public class JSONArray implements JSON, List<Object>, RandomAccess {
+public class JSONArray implements JSON, List, RandomAccess {
 
     /**
      * 一个表示空的JSONArray的实例
@@ -77,6 +77,11 @@ public class JSONArray implements JSON, List<Object>, RandomAccess {
     @Override
     public Object value() {
         return this;
+    }
+
+    @Override
+    public boolean isArray() {
+        return true;
     }
 
     @Override
@@ -303,81 +308,117 @@ public class JSONArray implements JSON, List<Object>, RandomAccess {
      * @since 1.0
      */
     public Object opt(int idx) {
+        return opt(idx,null);
+    }
+
+    public JSONObject optJSONObject(int idx) {
+        return optJSONObject(idx,null);
+    }
+
+    public JSONArray optJSONArray(int idx) {
+        return optJSONArray(idx, null);
+    }
+
+    public String optString(int idx) {
+        return optString(idx,null);
+    }
+
+    public boolean optBoolean(int idx) {
+        return optBoolean(idx, false);
+    }
+
+    public int optInt(int idx) {
+        return optInt(idx, 0);
+    }
+
+    public long optLong(int idx) {
+        return optLong(idx, 0L);
+    }
+
+    public float optFloat(int idx) {
+        return optFloat(idx, 0F);
+    }
+
+    public double optDouble(int idx) {
+        return optDouble(idx, 0D);
+    }
+
+    public Object opt(int idx, Object defaultValue) {
         JSON val = eles.get(idx);
         if(val == null) {
-            return null;
+            return defaultValue;
         }
 
         return val.value();
     }
 
-    public JSONObject optJSONObject(int idx) {
+    public JSONObject optJSONObject(int idx, JSONObject defaultValue) {
         JSON val = eles.get(idx);
         if(val == null || (val.type() != JSONType.OBJECT)) {
-            return null;
+            return defaultValue;
         }
 
         return (JSONObject) val.value();
     }
 
-    public JSONArray optJSONArray(int idx) {
+    public JSONArray optJSONArray(int idx, JSONArray defaultValue) {
         JSON val = eles.get(idx);
         if(val == null || (val.type() != JSONType.OBJECT)) {
-            return null;
+            return defaultValue;
         }
 
         return (JSONArray) val.value();
     }
 
-    public String optString(int idx) {
+    public String optString(int idx, String defaultValue) {
         JSON val = eles.get(idx);
         if(val == null) {
-            return null;
+            return defaultValue;
         }
 
         return String.valueOf(val.value());
     }
 
-    public boolean optBoolean(int idx) {
+    public boolean optBoolean(int idx, boolean defaultValue) {
         JSON val = eles.get(idx);
         if(val == null || (val.type() != JSONType.BOOL)) {
-            return false;
+            return defaultValue;
         }
 
         return (Boolean) val.value();
     }
 
-    public int optInt(int idx) {
+    public int optInt(int idx, int defaultValue) {
         JSON val = eles.get(idx);
         if(val == null || (val.type() != JSONType.INT)) {
-            return 0;
+            return defaultValue;
         }
 
         return (Integer) val.value();
     }
 
-    public long optLong(int idx) {
+    public long optLong(int idx, long defaultValue) {
         JSON val = eles.get(idx);
         if(val == null || (val.type() != JSONType.LONG)) {
-            return 0L;
+            return defaultValue;
         }
 
         return (Long) val.value();
     }
 
-    public float optFloat(int idx) {
+    public float optFloat(int idx, float defaultValue) {
         JSON val = eles.get(idx);
         if(val == null || (val.type() != JSONType.FLOAT)) {
-            return 0F;
+            return defaultValue;
         }
 
         return (Float) val.value();
     }
 
-    public double optDouble(int idx) {
+    public double optDouble(int idx, double defaultValue) {
         JSON val = eles.get(idx);
         if(val == null || (val.type() != JSONType.DOUBLE)) {
-            return 0D;
+            return defaultValue;
         }
 
         return (Double) val.value();
@@ -410,8 +451,25 @@ public class JSONArray implements JSON, List<Object>, RandomAccess {
     }
 
     @Override
-    public <T> T[] toArray(T[] a) {
+    public Object[] toArray(Object[] a) {
         throw new RuntimeException("Unsupported Operation Exception !");
+    }
+
+    @Override
+    public boolean addAll(Collection c) {
+        for(Object ele : c) {
+            add(ele);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean addAll(int index, Collection c) {
+        List<JSON> collected = new ArrayList<>(c.size());
+        for(Object ele : c) {
+            collected.add(JSONObj.fromObject(ele));
+        }
+        return eles.addAll(index, collected);
     }
 
     @Override
@@ -427,29 +485,12 @@ public class JSONArray implements JSON, List<Object>, RandomAccess {
     }
 
     @Override
-    public boolean containsAll(Collection<?> c) {
+    public boolean containsAll(Collection c) {
         throw new RuntimeException("Unsupported Operation Exception !");
     }
 
     @Override
-    public boolean addAll(Collection<?> c) {
-        for(Object ele : c) {
-            add(ele);
-        }
-        return true;
-    }
-
-    @Override
-    public boolean addAll(int index, Collection<?> c) {
-        List<JSON> collected = new ArrayList<>(c.size());
-        for(Object ele : c) {
-            collected.add(JSONObj.fromObject(ele));
-        }
-        return eles.addAll(index, collected);
-    }
-
-    @Override
-    public boolean removeAll(Collection<?> c) {
+    public boolean removeAll(Collection c) {
         for(Object ele : c) {
             remove(ele);
         }
@@ -457,7 +498,7 @@ public class JSONArray implements JSON, List<Object>, RandomAccess {
     }
 
     @Override
-    public boolean retainAll(Collection<?> c) {
+    public boolean retainAll(Collection c) {
         boolean modified = false;
         Iterator<Object> ite = iterator();
         while(ite.hasNext()) {

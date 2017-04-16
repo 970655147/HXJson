@@ -20,7 +20,7 @@ import static com.hx.log.util.Log.info;
  * @version 1.0
  * @date 4/15/2017 11:50 AM
  */
-public class JSONObject implements JSON, Map<String, Object> {
+public class JSONObject implements JSON, Map {
 
     /**
      * 一个表示空的JSONObject的实例
@@ -101,6 +101,11 @@ public class JSONObject implements JSON, Map<String, Object> {
     @Override
     public Object value() {
         return this;
+    }
+
+    @Override
+    public boolean isArray() {
+        return false;
     }
 
     @Override
@@ -446,81 +451,117 @@ public class JSONObject implements JSON, Map<String, Object> {
      * @since 1.0
      */
     public Object opt(String key) {
+        return opt(key, null);
+    }
+
+    public JSONObject optJSONObject(String key) {
+        return optJSONObject(key, null);
+    }
+
+    public JSONArray optJSONArray(String key) {
+        return optJSONArray(key, null);
+    }
+
+    public String optString(String key) {
+        return optString(key, null);
+    }
+
+    public boolean optBoolean(String key) {
+        return optBoolean(key, false);
+    }
+
+    public int optInt(String key) {
+        return optInt(key, 0);
+    }
+
+    public long optLong(String key) {
+        return optLong(key, 0L);
+    }
+
+    public float optFloat(String key) {
+        return optFloat(key, 0F);
+    }
+
+    public double optDouble(String key) {
+        return optDouble(key, 0D);
+    }
+
+    public Object opt(String key, Object defaultValue) {
         JSON val = eles.get(key);
         if (val == null) {
-            return null;
+            return defaultValue;
         }
 
         return val.value();
     }
 
-    public JSONObject optJSONObject(String key) {
+    public JSONObject optJSONObject(String key, JSONObject defaultValue) {
         JSON val = eles.get(key);
         if (val == null || (val.type() != JSONType.OBJECT)) {
-            return null;
+            return defaultValue;
         }
 
         return (JSONObject) val.value();
     }
 
-    public JSONArray optJSONArray(String key) {
+    public JSONArray optJSONArray(String key, JSONArray defaultValue) {
         JSON val = eles.get(key);
         if (val == null || (val.type() != JSONType.ARRAY)) {
-            return null;
+            return defaultValue;
         }
 
         return (JSONArray) val.value();
     }
 
-    public String optString(String key) {
+    public String optString(String key, String defaultValue) {
         JSON val = eles.get(key);
         if (val == null) {
-            return null;
+            return defaultValue;
         }
 
         return String.valueOf(val.value());
     }
 
-    public boolean optBoolean(String key) {
+    public boolean optBoolean(String key, boolean defaultValue) {
         JSON val = eles.get(key);
         if (val == null || (val.type() != JSONType.BOOL)) {
-            return false;
+            return defaultValue;
         }
 
         return (Boolean) val.value();
     }
 
-    public int optInt(String key) {
+    public int optInt(String key, int defaultValue) {
         JSON val = eles.get(key);
         if (val == null || (val.type() != JSONType.INT)) {
-            return 0;
+            return defaultValue;
         }
 
         return (Integer) val.value();
     }
 
-    public long optLong(String key) {
+    public long optLong(String key, long defaultValue) {
         JSON val = eles.get(key);
         if (val == null || (val.type() != JSONType.LONG)) {
-            return 0L;
+            return defaultValue;
         }
 
         return (Long) val.value();
     }
 
-    public float optFloat(String key) {
+    public float optFloat(String key, float defaultValue) {
         JSON val = eles.get(key);
         if (val == null || (val.type() != JSONType.FLOAT)) {
-            return 0F;
+            return defaultValue;
         }
 
         return (Float) val.value();
     }
 
-    public double optDouble(String key) {
+    public double optDouble(String key, double defaultValue) {
         JSON val = eles.get(key);
         if (val == null || (val.type() != JSONType.DOUBLE)) {
-            return 0D;
+            return defaultValue;
         }
 
         return (Double) val.value();
@@ -550,6 +591,20 @@ public class JSONObject implements JSON, Map<String, Object> {
         return eles.keySet();
     }
 
+    /**
+     * 获取当前JSONObject的所有的key的集合, 存放于结果的JSONArray中
+     *
+     * @return com.hx.json.JSONArray
+     * @author Jerry.X.He
+     * @date 4/16/2017 1:51 PM
+     * @since 1.0
+     */
+    public JSONArray names() {
+        JSONArray result = new JSONArray();
+        result.addAll(eles.keySet());
+        return result;
+    }
+
     @Override
     public boolean containsKey(Object key) {
         return eles.containsKey(key);
@@ -577,9 +632,14 @@ public class JSONObject implements JSON, Map<String, Object> {
     }
 
     @Override
-    public void putAll(Map<? extends String, ?> m) {
-        for (Entry<? extends String, ?> entry : m.entrySet()) {
-            put(entry.getKey(), entry.getValue());
+    public Object put(Object key, Object value) {
+        return put(String.valueOf(key), value);
+    }
+
+    @Override
+    public void putAll(Map m) {
+        for (Object key : m.keySet()) {
+            put(String.valueOf(key), m.get(key));
         }
     }
 

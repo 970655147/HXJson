@@ -33,6 +33,11 @@ class JSONStr implements JSON {
     }
 
     @Override
+    public boolean isArray() {
+        return false;
+    }
+
+    @Override
     public boolean isEmpty() {
         return true;
     }

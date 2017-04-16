@@ -90,22 +90,22 @@ public class NullJSONArray extends JSONArray {
     }
 
     @Override
-    public boolean addAll(Collection<?> c) {
+    public boolean addAll(Collection c) {
         throw new RuntimeException("Unsupported Operation Exception !");
     }
 
     @Override
-    public boolean addAll(int index, Collection<?> c) {
+    public boolean addAll(int index, Collection c) {
         throw new RuntimeException("Unsupported Operation Exception !");
     }
 
     @Override
-    public boolean removeAll(Collection<?> c) {
+    public boolean removeAll(Collection c) {
         throw new RuntimeException("Unsupported Operation Exception !");
     }
 
     @Override
-    public boolean retainAll(Collection<?> c) {
+    public boolean retainAll(Collection c) {
         throw new RuntimeException("Unsupported Operation Exception !");
     }
 
