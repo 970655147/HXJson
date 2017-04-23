@@ -13,6 +13,11 @@ import com.hx.json.interf.JSONType;
 class JSONObj implements JSON {
 
     /**
+     * JSONObj(null)
+     */
+    public static final JSONObj JSON_OBJ_NULL = JSONObj.fromObject(null);
+
+    /**
      * 当前JSON持有的Object
      */
     private Object obj;

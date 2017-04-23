@@ -32,6 +32,11 @@ public final class JSONConstants {
     public static final String ELE_SEP = ",";
 
     /**
+     * null元素, parse 为一个JSONObj(null)
+     */
+    public static final String ELE_NULL = "null";
+
+    /**
      * 几种基本类型的后缀, long, float, double
      */
     public static final Set<String> ELE_LONG_SUFFIXES = Tools.asSet("l", "L" );

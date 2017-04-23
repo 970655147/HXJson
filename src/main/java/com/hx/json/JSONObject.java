@@ -120,7 +120,7 @@ public class JSONObject implements JSON, Map {
 
     @Override
     public int size() {
-        return 0;
+        return eles.size();
     }
 
     @Override
@@ -623,7 +623,7 @@ public class JSONObject implements JSON, Map {
 
     @Override
     public Object get(Object key) {
-        return eles.get(key).value();
+        return opt(String.valueOf(key));
     }
 
     @Override

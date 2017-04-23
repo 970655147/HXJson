@@ -46,6 +46,10 @@ final class JSONParseUtils {
         } else if (next.startsWith(JSONConstants.STR_SEP01) || next.startsWith(JSONConstants.STR_SEP02)) {
             sep.next();
             return JSONStr.fromObject(trimForSurroundSep(next, JSONConstants.KEY_SEPS));
+            // take null check before 'l', "L"
+        } else if(Tools.equalsIgnoreCase(JSONConstants.ELE_NULL, next)){
+            sep.next();
+            return JSONObj.JSON_OBJ_NULL;
         } else if (Tools.equalsIgnoreCase(Tools.TRUE, next) || Tools.equalsIgnoreCase(Tools.FALSE, next)) {
             sep.next();
             return JSONBool.fromObject(Tools.equalsIgnoreCase(Tools.TRUE, next));
@@ -59,7 +63,7 @@ final class JSONParseUtils {
             }
         } else if (endsWith(next, JSONConstants.ELE_FLOAT_SUFFIXES) ||
                 // if text with '.', default choose it as float
-                (next.contains(".")) && (!endsWith(next, JSONConstants.BEAN_GETTER_PREFIXES))) {
+                (next.contains(".")) && (!endsWith(next, JSONConstants.ELE_DOUBLE_SUFFIXES))) {
             try {
                 float floatVal = Float.parseFloat(next);
                 sep.next();
@@ -67,7 +71,7 @@ final class JSONParseUtils {
             } catch (Exception e) {
                 // ignore
             }
-        } else if (endsWith(next, JSONConstants.BEAN_GETTER_PREFIXES)) {
+        } else if (endsWith(next, JSONConstants.ELE_DOUBLE_SUFFIXES)) {
             try {
                 double doubleVal = Double.parseDouble(next);
                 sep.next();
@@ -192,7 +196,12 @@ final class JSONParseUtils {
                 Tools.append(sb, "");
                 toString((JSONArray) value.value(), sb);
             } else if ((JSONType.OBJ == value.type()) || (JSONType.STR == value.type())) {
-                Tools.append(sb, "\"" + value.toString(0) + "\"");
+                // for null, output null directly
+                if(JSONType.OBJ == value.type() && (JSONObj.JSON_OBJ_NULL == value) ) {
+                    Tools.append(sb, value.toString(0) );
+                } else {
+                    Tools.append(sb, "\"" + value.toString(0) + "\"");
+                }
             } else {
                 Tools.append(sb, value.toString(0));
             }
