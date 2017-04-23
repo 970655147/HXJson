@@ -730,24 +730,27 @@ public class JSONObject implements JSON, Map {
         Tools.assert0(JSONConstants.OBJ_START.equals(sep.next()), "expect a : " + JSONConstants.OBJ_START + " ! around : " + sep.currentAndRest());
         JSONObject result = new JSONObject();
 
-        while (sep.hasNext()) {
-            String nextKey = sep.next().trim();
-            Tools.assert0(
-                    (nextKey.startsWith(JSONConstants.STR_SEP01) && nextKey.endsWith(JSONConstants.STR_SEP01))
-                            ||
-                            (nextKey.startsWith(JSONConstants.STR_SEP02) && nextKey.endsWith(JSONConstants.STR_SEP02)),
-                    "bad key format around : " + sep.currentAndRest()
-            );
-            Tools.assert0(JSONConstants.KV_SEP.equals(sep.next()), "expect a : " + JSONConstants.KV_SEP + " ! around : " + sep.currentAndRest());
-            nextKey = JSONParseUtils.trimForSurroundSep(nextKey, JSONConstants.KEY_SEPS);
-            JSON nextValue = JSONParseUtils.getNextValue(sep, nextKey, config);
-            result.eles.put(nextKey, nextValue);
+        if(! JSONConstants.OBJ_END.equals(sep.seek())) {
+            while (sep.hasNext()) {
+                String nextKey = sep.next().trim();
+                Tools.assert0(
+                        (nextKey.startsWith(JSONConstants.STR_SEP01) && nextKey.endsWith(JSONConstants.STR_SEP01))
+                                ||
+                                (nextKey.startsWith(JSONConstants.STR_SEP02) && nextKey.endsWith(JSONConstants.STR_SEP02)),
+                        "bad key format around : " + sep.currentAndRest()
+                );
+                Tools.assert0(JSONConstants.KV_SEP.equals(sep.next()), "expect a : " + JSONConstants.KV_SEP + " ! around : " + sep.currentAndRest());
+                nextKey = JSONParseUtils.trimForSurroundSep(nextKey, JSONConstants.KEY_SEPS);
+                JSON nextValue = JSONParseUtils.getNextValue(sep, nextKey, config);
+                result.eles.put(nextKey, nextValue);
 
-            if (JSONConstants.OBJ_END.equals(sep.seek())) {
-                break;
+                if (JSONConstants.OBJ_END.equals(sep.seek())) {
+                    break;
+                }
+                Tools.assert0(JSONConstants.ELE_SEP.equals(sep.next()), "expect a : " + JSONConstants.ELE_SEP + " ! around : " + sep.currentAndRest());
             }
-            Tools.assert0(JSONConstants.ELE_SEP.equals(sep.next()), "expect a : " + JSONConstants.ELE_SEP + " ! around : " + sep.currentAndRest());
         }
+
         // skip '}'
         sep.next();
         if (checkEnd) {

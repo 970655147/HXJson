@@ -101,7 +101,8 @@ public class JSONArray implements JSON, List, RandomAccess {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(size() * String.valueOf(optString(0)).length());
+        int sz = size();
+        StringBuilder sb = new StringBuilder(sz > 0 ? (sz * String.valueOf(optString(0)).length()) : 2);
         JSONParseUtils.toString(this, sb);
         return sb.toString();
     }
@@ -673,16 +674,19 @@ public class JSONArray implements JSON, List, RandomAccess {
         JSONArray result = new JSONArray();
 
         int idx = 0;
-        while (sep.hasNext()) {
-            JSON nextValue = JSONParseUtils.getNextValue(sep, "[" + idx + "]", config);
-            result.eles.add(nextValue);
+        if(! JSONConstants.ARR_END.equals(sep.seek())) {
+            while (sep.hasNext()) {
+                JSON nextValue = JSONParseUtils.getNextValue(sep, "[" + idx + "]", config);
+                result.eles.add(nextValue);
 
-            if (JSONConstants.ARR_END.equals(sep.seek())) {
-                break;
+                if (JSONConstants.ARR_END.equals(sep.seek())) {
+                    break;
+                }
+                Tools.assert0(JSONConstants.ELE_SEP.equals(sep.next()), "expect a : " + JSONConstants.ELE_SEP + " ! around : " + sep.currentAndRest());
+                idx++;
             }
-            Tools.assert0(JSONConstants.ELE_SEP.equals(sep.next()), "expect a : " + JSONConstants.ELE_SEP + " ! around : " + sep.currentAndRest());
-            idx ++;
         }
+
         // skip ']'
         sep.next();
         if(checkEnd) {
