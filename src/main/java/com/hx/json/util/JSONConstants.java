@@ -56,5 +56,11 @@ public final class JSONConstants {
     public static final Map<String, String> NEED_TO_ESCAPE = Tools.asMap(new String[]{STR_SEP01, STR_SEP02 }, STR_SEP01, STR_SEP02);
     public static final Set<String> KEY_SEPS = Tools.asSet(STR_SEP01, STR_SEP02);
 
+    /**
+     * toString的时候需要的常亮
+     */
+    public static String TO_STRING_ELE_SEP = ", ";
+    public static final String ONE_BACKSPACE = " ";
+    public static final String FOUR_BACKSPACE = "    ";
 
 }
