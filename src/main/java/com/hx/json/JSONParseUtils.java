@@ -8,6 +8,7 @@ import com.hx.json.util.JSONConstants;
 import com.hx.log.str.WordsSeprator;
 import com.hx.log.util.Tools;
 
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 /**
@@ -90,21 +91,18 @@ public final class JSONParseUtils {
         }
 
         if (obj instanceof JSONObject) {
+            JSONObject jObject = (JSONObject) obj;
             if (Map.class.isAssignableFrom(argClazz)) {
-                return argClazz.cast(obj);
+                return argClazz.cast(objToMap(jObject, argClazz));
             } else {
-                return JSONObject.toBean((JSONObject) obj, argClazz);
+                return JSONObject.toBean(jObject, argClazz);
             }
         } else if (obj instanceof JSONArray) {
-            JSONArray arr = (JSONArray) obj;
+            JSONArray jArray = (JSONArray) obj;
             if (List.class.isAssignableFrom(argClazz)) {
-                List attr = new ArrayList<>();
-                attr.addAll(arr);
-                return argClazz.cast(attr);
+                return argClazz.cast(arrToList(jArray, argClazz));
             } else if (Set.class.isAssignableFrom(argClazz)) {
-                Set attr = new LinkedHashSet<>();
-                attr.addAll(arr);
-                return argClazz.cast(attr);
+                return argClazz.cast(arrToSet(jArray, argClazz));
             }
         }
 
@@ -422,6 +420,78 @@ public final class JSONParseUtils {
         }
 
         return null;
+    }
+
+    /**
+     * 将给定的JSONObject转换为给定的Map
+     *
+     * @param obj      给定的JSONObject
+     * @param argClazz 需要转换的类型
+     * @return java.lang.Object
+     * @author Jerry.X.He
+     * @date 4/29/2017 4:13 PM
+     * @since 1.0
+     */
+    private static Map objToMap(JSONObject obj, Class argClazz)
+            throws IllegalAccessException, InstantiationException {
+        int modifier = argClazz.getModifiers();
+        if(Modifier.isAbstract(modifier) || Modifier.isInterface(modifier) ) {
+            return obj;
+        }
+
+        Map map = (Map) argClazz.newInstance();
+        map.putAll(obj);
+        return map;
+    }
+
+    /**
+     * 将给定的JSONArray转换为给定的List
+     *
+     * @param arr      给定的JSONOArray
+     * @param argClazz 需要转换的类型
+     * @return java.lang.Object
+     * @author Jerry.X.He
+     * @date 4/29/2017 4:13 PM
+     * @since 1.0
+     */
+    private static List arrToList(JSONArray arr, Class argClazz)
+            throws IllegalAccessException, InstantiationException {
+        List result = null;
+        int modifier = argClazz.getModifiers();
+        if(Modifier.isAbstract(modifier) || Modifier.isInterface(modifier) ) {
+            result = new ArrayList<>();
+        }
+
+        if(result == null) {
+            result = (List) argClazz.newInstance();
+        }
+        result.addAll(arr);
+        return result;
+    }
+
+    /**
+     * 将给定的JSONArray转换为给定的Set
+     *
+     * @param arr      给定的JSONOArray
+     * @param argClazz 需要转换的类型
+     * @return java.lang.Object
+     * @author Jerry.X.He
+     * @date 4/29/2017 4:13 PM
+     * @since 1.0
+     */
+    private static Set arrToSet(JSONArray arr, Class argClazz)
+            throws IllegalAccessException, InstantiationException {
+        Set result = null;
+        int modifier = argClazz.getModifiers();
+        if(Modifier.isAbstract(modifier) || Modifier.isInterface(modifier) ) {
+            result = new LinkedHashSet<>();
+        }
+
+        if(result == null) {
+            result = (Set) argClazz.newInstance();
+        }
+        result.addAll(arr);
+        return result;
     }
 
     /**
