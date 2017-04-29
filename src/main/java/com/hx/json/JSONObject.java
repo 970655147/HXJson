@@ -730,7 +730,7 @@ public class JSONObject implements JSON, Map {
         Tools.assert0(JSONConstants.OBJ_START.equals(sep.next()), "expect a : " + JSONConstants.OBJ_START + " ! around : " + sep.currentAndRest());
         JSONObject result = new JSONObject();
 
-        if(! JSONConstants.OBJ_END.equals(sep.seek())) {
+        if (!JSONConstants.OBJ_END.equals(sep.seek())) {
             while (sep.hasNext()) {
                 String nextKey = sep.next().trim();
                 Tools.assert0(
@@ -759,7 +759,7 @@ public class JSONObject implements JSON, Map {
         return result;
     }
 
-    static JSONObject fromString(String str, JSONConfig config) {
+    private static JSONObject fromString(String str, JSONConfig config) {
         WordsSeprator sep = new WordsSeprator(str, JSONConstants.JSON_SEPS, JSONConstants.NEED_TO_ESCAPE, true, false);
         return fromString(sep, config, true);
     }
@@ -774,7 +774,7 @@ public class JSONObject implements JSON, Map {
      * @date 4/16/2017 11:49 AM
      * @since 1.0
      */
-    static JSONObject fromBean(Object obj, JSONConfig config) {
+    private static JSONObject fromBean(Object obj, JSONConfig config) {
         JSONObject result = new JSONObject();
         Class clazz = obj.getClass();
         int clazzModifier = clazz.getModifiers();
@@ -832,7 +832,10 @@ public class JSONObject implements JSON, Map {
      * @date 4/16/2017 12:10 PM
      * @since 1.0
      */
-    private static <T> T toBean0(JSONObject obj, JSONConfig config, Class<T> clazz) {
+    static <T> T toBean0(JSONObject obj, JSONConfig config, Class<T> clazz) {
+        if ((obj == null) || (clazz == null)) {
+            return null;
+        }
         int clazzModifier = clazz.getModifiers();
         if ((!Modifier.isPublic(clazzModifier)) || (Modifier.isAbstract(clazzModifier))) {
             return null;
@@ -863,8 +866,11 @@ public class JSONObject implements JSON, Map {
                         method.invoke(result, obj.optFloat(key));
                     } else if ((double.class == argClazz) || (Double.class == argClazz)) {
                         method.invoke(result, obj.optDouble(key));
+                    } else if (String.class == argClazz) {
+                        method.invoke(result, obj.optString(key));
                     } else {
-                        method.invoke(result, obj.opt(key));
+                        Object valueObj = JSONParseUtils.toBean(obj.opt(key), config, argClazz);
+                        method.invoke(result, argClazz.cast(valueObj));
                     }
                 }
             }

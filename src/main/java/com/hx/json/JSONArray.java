@@ -49,17 +49,10 @@ public class JSONArray implements JSON, List, RandomAccess {
 
         if (obj instanceof String) {
             return fromString((String) obj, config);
-        } else if(obj instanceof Collection) {
-            JSONArray result = new JSONArray();
-            result.addAll((Collection) obj);
-            return result;
+        } else if (obj instanceof Collection) {
+            return fromCollection((Collection) obj, config);
         } else if (obj.getClass().isArray()) {
-            Object[] arr = (Object[]) obj;
-            JSONArray result = new JSONArray();
-            for(Object ele : arr) {
-                result.add(ele);
-            }
-            return result;
+            return fromArray(obj, config, obj.getClass());
         } else {
             return NULL_JSON_ARRAY;
         }
@@ -117,7 +110,7 @@ public class JSONArray implements JSON, List, RandomAccess {
     /**
      * 想当前JSONArray中刚添加一个元素
      *
-     * @param val   给定的value
+     * @param val 给定的value
      * @return com.hx.log.json.JSONObject
      * @author Jerry.X.He
      * @date 4/15/2017 6:29 PM
@@ -218,7 +211,7 @@ public class JSONArray implements JSON, List, RandomAccess {
      */
     public Object get(int idx) {
         JSON val = eles.get(idx);
-        if(val == null) {
+        if (val == null) {
             Tools.assert0("the element of [" + idx + "] do not exists !");
         }
 
@@ -227,7 +220,7 @@ public class JSONArray implements JSON, List, RandomAccess {
 
     public JSONObject getJSONObject(int idx) {
         JSON val = eles.get(idx);
-        if(val == null || (val.type() != JSONType.OBJECT)) {
+        if (val == null || (val.type() != JSONType.OBJECT)) {
             Tools.assert0("the element of [" + idx + "] do not exists or it does not an JSONObject !");
         }
 
@@ -236,7 +229,7 @@ public class JSONArray implements JSON, List, RandomAccess {
 
     public JSONArray getJSONArray(int idx) {
         JSON val = eles.get(idx);
-        if(val == null || (val.type() != JSONType.OBJECT)) {
+        if (val == null || (val.type() != JSONType.OBJECT)) {
             Tools.assert0("the element of [" + idx + "] do not exists or it does not an JSONArray !");
         }
 
@@ -246,7 +239,7 @@ public class JSONArray implements JSON, List, RandomAccess {
 
     public String getString(int idx) {
         JSON val = eles.get(idx);
-        if(val == null) {
+        if (val == null) {
             Tools.assert0("the element of [" + idx + "] do not exists !");
         }
 
@@ -255,7 +248,7 @@ public class JSONArray implements JSON, List, RandomAccess {
 
     public boolean getBoolean(int idx) {
         JSON val = eles.get(idx);
-        if(val == null || (val.type() != JSONType.BOOL)) {
+        if (val == null || (val.type() != JSONType.BOOL)) {
             Tools.assert0("the element of [" + idx + "] do not exists or it does not an boolean !");
         }
 
@@ -264,7 +257,7 @@ public class JSONArray implements JSON, List, RandomAccess {
 
     public int getInt(int idx) {
         JSON val = eles.get(idx);
-        if(val == null || (val.type() != JSONType.INT)) {
+        if (val == null || (val.type() != JSONType.INT)) {
             Tools.assert0("the element of [" + idx + "] do not exists or it does not an int !");
         }
 
@@ -273,7 +266,7 @@ public class JSONArray implements JSON, List, RandomAccess {
 
     public long getLong(int idx) {
         JSON val = eles.get(idx);
-        if(val == null || (val.type() != JSONType.LONG)) {
+        if (val == null || (val.type() != JSONType.LONG)) {
             Tools.assert0("the element of [" + idx + "] do not exists or it does not an long !");
         }
 
@@ -282,7 +275,7 @@ public class JSONArray implements JSON, List, RandomAccess {
 
     public float getFloat(int idx) {
         JSON val = eles.get(idx);
-        if(val == null || (val.type() != JSONType.FLOAT)) {
+        if (val == null || (val.type() != JSONType.FLOAT)) {
             Tools.assert0("the element of [" + idx + "] do not exists or it does not an float !");
         }
 
@@ -291,7 +284,7 @@ public class JSONArray implements JSON, List, RandomAccess {
 
     public double getDouble(int idx) {
         JSON val = eles.get(idx);
-        if(val == null || (val.type() != JSONType.DOUBLE)) {
+        if (val == null || (val.type() != JSONType.DOUBLE)) {
             Tools.assert0("the element of [" + idx + "] do not exists or it does not an double !");
         }
 
@@ -309,11 +302,11 @@ public class JSONArray implements JSON, List, RandomAccess {
      * @since 1.0
      */
     public Object opt(int idx) {
-        return opt(idx,null);
+        return opt(idx, null);
     }
 
     public JSONObject optJSONObject(int idx) {
-        return optJSONObject(idx,null);
+        return optJSONObject(idx, null);
     }
 
     public JSONArray optJSONArray(int idx) {
@@ -321,7 +314,7 @@ public class JSONArray implements JSON, List, RandomAccess {
     }
 
     public String optString(int idx) {
-        return optString(idx,null);
+        return optString(idx, null);
     }
 
     public boolean optBoolean(int idx) {
@@ -346,7 +339,7 @@ public class JSONArray implements JSON, List, RandomAccess {
 
     public Object opt(int idx, Object defaultValue) {
         JSON val = eles.get(idx);
-        if(val == null) {
+        if (val == null) {
             return defaultValue;
         }
 
@@ -355,7 +348,7 @@ public class JSONArray implements JSON, List, RandomAccess {
 
     public JSONObject optJSONObject(int idx, JSONObject defaultValue) {
         JSON val = eles.get(idx);
-        if(val == null || (val.type() != JSONType.OBJECT)) {
+        if (val == null || (val.type() != JSONType.OBJECT)) {
             return defaultValue;
         }
 
@@ -364,7 +357,7 @@ public class JSONArray implements JSON, List, RandomAccess {
 
     public JSONArray optJSONArray(int idx, JSONArray defaultValue) {
         JSON val = eles.get(idx);
-        if(val == null || (val.type() != JSONType.OBJECT)) {
+        if (val == null || (val.type() != JSONType.OBJECT)) {
             return defaultValue;
         }
 
@@ -373,7 +366,7 @@ public class JSONArray implements JSON, List, RandomAccess {
 
     public String optString(int idx, String defaultValue) {
         JSON val = eles.get(idx);
-        if(val == null) {
+        if (val == null) {
             return defaultValue;
         }
 
@@ -382,7 +375,7 @@ public class JSONArray implements JSON, List, RandomAccess {
 
     public boolean optBoolean(int idx, boolean defaultValue) {
         JSON val = eles.get(idx);
-        if(val == null || (val.type() != JSONType.BOOL)) {
+        if (val == null || (val.type() != JSONType.BOOL)) {
             return defaultValue;
         }
 
@@ -391,7 +384,7 @@ public class JSONArray implements JSON, List, RandomAccess {
 
     public int optInt(int idx, int defaultValue) {
         JSON val = eles.get(idx);
-        if(val == null || (val.type() != JSONType.INT)) {
+        if (val == null || (val.type() != JSONType.INT)) {
             return defaultValue;
         }
 
@@ -400,7 +393,7 @@ public class JSONArray implements JSON, List, RandomAccess {
 
     public long optLong(int idx, long defaultValue) {
         JSON val = eles.get(idx);
-        if(val == null || (val.type() != JSONType.LONG)) {
+        if (val == null || (val.type() != JSONType.LONG)) {
             return defaultValue;
         }
 
@@ -409,7 +402,7 @@ public class JSONArray implements JSON, List, RandomAccess {
 
     public float optFloat(int idx, float defaultValue) {
         JSON val = eles.get(idx);
-        if(val == null || (val.type() != JSONType.FLOAT)) {
+        if (val == null || (val.type() != JSONType.FLOAT)) {
             return defaultValue;
         }
 
@@ -418,7 +411,7 @@ public class JSONArray implements JSON, List, RandomAccess {
 
     public double optDouble(int idx, double defaultValue) {
         JSON val = eles.get(idx);
-        if(val == null || (val.type() != JSONType.DOUBLE)) {
+        if (val == null || (val.type() != JSONType.DOUBLE)) {
             return defaultValue;
         }
 
@@ -427,8 +420,8 @@ public class JSONArray implements JSON, List, RandomAccess {
 
     @Override
     public boolean contains(Object o) {
-        for(Object ele : this) {
-            if(Objects.equals(ele, o) ) {
+        for (Object ele : this) {
+            if (Objects.equals(ele, o)) {
                 return true;
             }
         }
@@ -445,8 +438,8 @@ public class JSONArray implements JSON, List, RandomAccess {
     public Object[] toArray() {
         Object[] res = new Object[size()];
         int idx = 0;
-        for(Object ele : this) {
-            res[idx ++] = ele;
+        for (Object ele : this) {
+            res[idx++] = ele;
         }
         return res;
     }
@@ -458,7 +451,7 @@ public class JSONArray implements JSON, List, RandomAccess {
 
     @Override
     public boolean addAll(Collection c) {
-        for(Object ele : c) {
+        for (Object ele : c) {
             add(ele);
         }
         return true;
@@ -467,7 +460,7 @@ public class JSONArray implements JSON, List, RandomAccess {
     @Override
     public boolean addAll(int index, Collection c) {
         List<JSON> collected = new ArrayList<>(c.size());
-        for(Object ele : c) {
+        for (Object ele : c) {
             collected.add(JSONObj.fromObject(ele));
         }
         return eles.addAll(index, collected);
@@ -476,8 +469,8 @@ public class JSONArray implements JSON, List, RandomAccess {
     @Override
     public boolean remove(Object o) {
         Iterator<Object> ite = iterator();
-        while(ite.hasNext()) {
-            if(Objects.equals(ite.next(), o) ) {
+        while (ite.hasNext()) {
+            if (Objects.equals(ite.next(), o)) {
                 ite.remove();
             }
         }
@@ -492,7 +485,7 @@ public class JSONArray implements JSON, List, RandomAccess {
 
     @Override
     public boolean removeAll(Collection c) {
-        for(Object ele : c) {
+        for (Object ele : c) {
             remove(ele);
         }
         return true;
@@ -502,8 +495,8 @@ public class JSONArray implements JSON, List, RandomAccess {
     public boolean retainAll(Collection c) {
         boolean modified = false;
         Iterator<Object> ite = iterator();
-        while(ite.hasNext()) {
-            if(!c.contains(ite.next())) {
+        while (ite.hasNext()) {
+            if (!c.contains(ite.next())) {
                 ite.remove();
                 modified = true;
             }
@@ -524,11 +517,11 @@ public class JSONArray implements JSON, List, RandomAccess {
     @Override
     public int indexOf(Object o) {
         int idx = 0;
-        for(Object ele : this) {
-            if(Objects.equals(ele, o)) {
+        for (Object ele : this) {
+            if (Objects.equals(ele, o)) {
                 return idx;
             }
-            idx ++;
+            idx++;
         }
 
         return -1;
@@ -580,6 +573,7 @@ public class JSONArray implements JSON, List, RandomAccess {
     }
 
     // ----------------- 辅助数据结构 -----------------------
+
     /**
      * Iterator
      *
@@ -589,18 +583,22 @@ public class JSONArray implements JSON, List, RandomAccess {
      */
     private static class InternalIterator implements Iterator<Object> {
         Iterator<JSON> ite;
+
         public InternalIterator(Iterator<JSON> ite) {
             this.ite = ite;
         }
+
         @Override
         public boolean hasNext() {
             return ite.hasNext();
         }
+
         @Override
         public Object next() {
             JSON next = ite.next();
             return (next != null) ? next.value() : null;
         }
+
         @Override
         public void remove() {
             ite.remove();
@@ -616,48 +614,59 @@ public class JSONArray implements JSON, List, RandomAccess {
      */
     private static class InternalListIterator implements ListIterator<Object> {
         ListIterator<JSON> ite;
+
         public InternalListIterator(ListIterator<JSON> ite) {
             this.ite = ite;
         }
+
         @Override
         public boolean hasNext() {
             return ite.hasNext();
         }
+
         @Override
         public Object next() {
             JSON res = ite.next();
             return (res != null) ? res.value() : null;
         }
+
         @Override
         public boolean hasPrevious() {
             return ite.hasPrevious();
         }
+
         @Override
         public Object previous() {
             JSON res = ite.previous();
             return (res != null) ? res.value() : null;
         }
+
         @Override
         public int nextIndex() {
             return ite.nextIndex();
         }
+
         @Override
         public int previousIndex() {
             return ite.previousIndex();
         }
+
         @Override
         public void remove() {
             ite.remove();
         }
+
         @Override
         public void set(Object o) {
             ite.set(JSONObj.fromObject(o));
         }
+
         @Override
         public void add(Object o) {
             ite.add(JSONObj.fromObject(o));
         }
     }
+
     // ----------------- 辅助方法 -----------------------
 
     /**
@@ -674,7 +683,7 @@ public class JSONArray implements JSON, List, RandomAccess {
         JSONArray result = new JSONArray();
 
         int idx = 0;
-        if(! JSONConstants.ARR_END.equals(sep.seek())) {
+        if (!JSONConstants.ARR_END.equals(sep.seek())) {
             while (sep.hasNext()) {
                 JSON nextValue = JSONParseUtils.getNextValue(sep, "[" + idx + "]", config);
                 result.eles.add(nextValue);
@@ -689,15 +698,136 @@ public class JSONArray implements JSON, List, RandomAccess {
 
         // skip ']'
         sep.next();
-        if(checkEnd) {
+        if (checkEnd) {
             Tools.assert0(Tools.isEmpty(sep.next()), "expect nothing after ']' !");
         }
         return result;
     }
 
-    static JSONArray fromString(String str, JSONConfig config) {
+    private static JSONArray fromString(String str, JSONConfig config) {
         WordsSeprator sep = new WordsSeprator(str, JSONConstants.JSON_SEPS, JSONConstants.NEED_TO_ESCAPE, true, false);
         return fromString(sep, config, true);
+    }
+
+    /**
+     * 从给定的Collection中提取JSONArray
+     *
+     * @param coll   给定的集合
+     * @param config 解析json的config
+     * @return com.hx.json.JSONArray
+     * @author Jerry.X.He
+     * @date 4/29/2017 1:54 PM
+     * @since 1.0
+     */
+    private static JSONArray fromCollection(Collection coll, JSONConfig config) {
+        JSONArray result = new JSONArray();
+        result.addAll(coll);
+        return result;
+    }
+
+    /**
+     * 从给定的数组对象中提取JSONArray
+     *
+     * @param obj      给定的数组对象
+     * @param config   解析json的config
+     * @param argClazz 数组类型
+     * @return com.hx.json.JSONArray
+     * @author Jerry.X.He
+     * @date 4/29/2017 1:46 PM
+     * @since 1.0
+     */
+    private static JSONArray fromArray(Object obj, JSONConfig config, Class argClazz) {
+        JSONArray result = new JSONArray();
+        if ((boolean[].class == argClazz) || (Boolean[].class == argClazz)) {
+            if (boolean[].class == argClazz) {
+                boolean[] arr = (boolean[]) obj;
+                for (boolean ele : arr) {
+                    result.add(ele);
+                }
+            } else if (Boolean[].class == argClazz) {
+                Boolean[] arr = (Boolean[]) obj;
+                for (Boolean ele : arr) {
+                    result.add(ele);
+                }
+            }
+        } else if (((int[].class == argClazz) || (byte[].class == argClazz) || (short[].class == argClazz))
+                || ((Integer[].class == argClazz) || (Byte[].class == argClazz) || (Short[].class == argClazz))
+                ) {
+            if (int[].class == argClazz) {
+                int[] arr = (int[]) obj;
+                for (int ele : arr) {
+                    result.add(ele);
+                }
+            } else if (byte[].class == argClazz) {
+                byte[] arr = (byte[]) obj;
+                for (byte ele : arr) {
+                    result.add(ele);
+                }
+            } else if (short[].class == argClazz) {
+                short[] arr = (short[]) obj;
+                for (short ele : arr) {
+                    result.add(ele);
+                }
+            } else if (Integer[].class == argClazz) {
+                Integer[] arr = (Integer[]) obj;
+                for (Integer ele : arr) {
+                    result.add(ele);
+                }
+            } else if (Byte[].class == argClazz) {
+                Byte[] arr = (Byte[]) obj;
+                for (Byte ele : arr) {
+                    result.add(ele);
+                }
+            } else if (Short[].class == argClazz) {
+                Short[] arr = (Short[]) obj;
+                for (Short ele : arr) {
+                    result.add(ele);
+                }
+            }
+        } else if ((long[].class == argClazz) || (Long[].class == argClazz)) {
+            if (long[].class == argClazz) {
+                long[] arr = (long[]) obj;
+                for (long ele : arr) {
+                    result.add(ele);
+                }
+            } else if (Long[].class == argClazz) {
+                Long[] arr = (Long[]) obj;
+                for (Long ele : arr) {
+                    result.add(ele);
+                }
+            }
+        } else if ((float[].class == argClazz) || (Float[].class == argClazz)) {
+            if (float[].class == argClazz) {
+                float[] arr = (float[]) obj;
+                for (float ele : arr) {
+                    result.add(ele);
+                }
+            } else if (Float[].class == argClazz) {
+                Float[] arr = (Float[]) obj;
+                for (Float ele : arr) {
+                    result.add(ele);
+                }
+            }
+        } else if ((double[].class == argClazz) || (Double[].class == argClazz)) {
+            if (double[].class == argClazz) {
+                double[] arr = (double[]) obj;
+                for (double ele : arr) {
+                    result.add(ele);
+                }
+            } else if (Double[].class == argClazz) {
+                Double[] arr = (Double[]) obj;
+                for (Double ele : arr) {
+                    result.add(ele);
+                }
+            }
+        } else {
+            Object[] arr = (Object[]) obj;
+            for (Object ele : arr) {
+                result.add(ele);
+            }
+        }
+
+        return result;
     }
 
 }
