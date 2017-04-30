@@ -8,6 +8,11 @@ import com.hx.log.util.Log;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import static com.hx.log.util.Log.info;
@@ -29,9 +34,10 @@ public class Test03JSONToBean {
     @Test
     public void toBean() {
 
-        JSONObject obj = JSONObject.fromObject("{\"name\":\"hx\", \"age\":33, 'friends':['123', '222'], 'self':{'name':'hxSelf', 'friends':['111'] }, 'scores':[1, 2, 4] }");
+        JSONObject obj = JSONObject.fromObject("{\"name\":\"hx\", \"age\":33, 'friends':['123', '222'], 'self':{'name':'hxSelf', 'friends':['111'] }, 'scores':[1, 2, 4], 'others' : [{'name':'hxSelf01', 'friends':['111'] }, {'name':'hxSelf02', 'friends':['111'] }] }");
 
         User user = JSONObject.toBean(obj, User.class);
+        JSONParseUtils.parse("{}", null);
         info(user.toString() );
 
     }
@@ -62,6 +68,25 @@ public class Test03JSONToBean {
     public void setByteArr(byte[] arr) {}
     public void setIntegerArr(Integer[] arr) {}
 
+    @Test
+    public void testGetFieldGeneraicTypeParam() throws Exception {
+
+        Class clazz = User.class;
+        Field friends = clazz.getDeclaredField("friends");
+
+        info(friends.getType() );
+        Type type = friends.getGenericType() ;
+        // 如果friends为rawType, 则type为Class
+        if(type instanceof ParameterizedType) {
+            ParameterizedType paramType = (ParameterizedType) type;
+            info(paramType.getActualTypeArguments() );
+        }
+
+        info(type);
+
+
+    }
+
     /**
      * test bean
      *
@@ -71,7 +96,10 @@ public class Test03JSONToBean {
      */
     public static class User {
         String name;
+//        LinkedList<String> friends;
         List<String> friends;
+        List<User> others;
+//        List friends;
         User self;
         int[] scores;
 
@@ -90,6 +118,12 @@ public class Test03JSONToBean {
         public void setFriends(List<String> friends) {
             this.friends = friends;
         }
+        public List<User> getOthers() {
+            return others;
+        }
+        public void setOthers(List<User> others) {
+            this.others = others;
+        }
         public User getSelf() {
             return self;
         }
@@ -106,7 +140,7 @@ public class Test03JSONToBean {
         @Override
         public String toString() {
             return new JSONObject().element("name", name).element("friends", friends)
-                    .element("self", self).element("scores", scores)
+                    .element("self", self).element("scores", scores).element("others", others)
                     .toString();
         }
     }

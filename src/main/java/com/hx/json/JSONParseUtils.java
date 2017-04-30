@@ -5,10 +5,15 @@ import com.hx.json.interf.JSONConfig;
 import com.hx.json.interf.JSONType;
 import com.hx.json.interf.JSONValueNodeParser;
 import com.hx.json.util.JSONConstants;
+import com.hx.log.cache.mem.LFUMCache;
+import com.hx.log.interf.Cache;
 import com.hx.log.str.WordsSeprator;
 import com.hx.log.util.Tools;
 
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -24,6 +29,20 @@ public final class JSONParseUtils {
      * 解析JSONValue的parser
      */
     private static JSONValueNodeParser VALUE_NODE_PARSER = new SimpleValueNodeParser();
+
+    /**
+     * Type的几种实现
+     */
+    public static final Integer TYPE_CLASS = 0;
+    public static final Integer TYPE_PARAMETER_TYPE = TYPE_CLASS + 1;
+    public static final Integer TYPE_GENERIC_ARRAY = TYPE_PARAMETER_TYPE + 1;
+    public static final Integer TYPE_TYPE_VARIABLE = TYPE_GENERIC_ARRAY + 1;
+    public static final Integer TYPE_WILDCARD_TYPE = TYPE_TYPE_VARIABLE + 1;
+
+    /**
+     * 缓存的Type -> Type类型 的映射
+     */
+    private static Cache<Type, Integer> CACHED_TYPE_2_TYPE_IMPL = new LFUMCache<>(100);
 
     // disable constructor
     private JSONParseUtils() {
@@ -66,26 +85,30 @@ public final class JSONParseUtils {
     /**
      * 将给定的Object转换为目标类型
      *
-     * @param obj      给定的Object, 可能为JSONObject, JSONArray等等
-     * @param config   解析json的config
-     * @param argClazz 目标类型
+     * @param obj    给定的Object, 可能为JSONObject, JSONArray等等
+     * @param config 解析json的config
+     * @param type   目标类型
      * @return java.lang.Object
      * @author Jerry.X.He
      * @date 4/29/2017 11:23 AM
      * @since 1.0
      */
-    public static <T> T toBean(Object obj, JSONConfig config, Class<T> argClazz) throws IllegalAccessException, InstantiationException {
-        if ((obj == null) || (argClazz == null)) {
+    public static <T> T toBean(Object obj, JSONConfig config, Type type)
+            throws IllegalAccessException, InstantiationException {
+        if ((obj == null) || (type == null)) {
             return null;
         }
 
+        Class<T> argClazz = getClassBoundsType(type);
         // this judge[argClazz.xx] does not have cross point with next judge[instanceof xx]
-        if (argClazz.isInstance(obj)) {
+        if ((! isTypeParameterizedOrGenericArray(type)) && (argClazz.isInstance(obj)) ) {
             return argClazz.cast(obj);
         } else if (JSONObject.class == argClazz) {
             return argClazz.cast(JSONObject.fromObject(obj));
         } else if (JSONArray.class == argClazz) {
             return argClazz.cast(JSONArray.fromObject(obj));
+        } else if (String.class == argClazz) {
+            return argClazz.cast(String.valueOf(obj));
         } else if (argClazz.isArray()) {
             return argClazz.cast(toBeanArray(obj, config, argClazz));
         }
@@ -93,16 +116,16 @@ public final class JSONParseUtils {
         if (obj instanceof JSONObject) {
             JSONObject jObject = (JSONObject) obj;
             if (Map.class.isAssignableFrom(argClazz)) {
-                return argClazz.cast(objToMap(jObject, argClazz));
+                return argClazz.cast(objToMap(jObject, config, type));
             } else {
                 return JSONObject.toBean(jObject, argClazz);
             }
         } else if (obj instanceof JSONArray) {
             JSONArray jArray = (JSONArray) obj;
             if (List.class.isAssignableFrom(argClazz)) {
-                return argClazz.cast(arrToList(jArray, argClazz));
+                return argClazz.cast(arrToList(jArray, config, type));
             } else if (Set.class.isAssignableFrom(argClazz)) {
-                return argClazz.cast(arrToSet(jArray, argClazz));
+                return argClazz.cast(arrToSet(jArray, config, type));
             }
         }
 
@@ -309,7 +332,8 @@ public final class JSONParseUtils {
         for (Map.Entry<String, JSON> entry : obj.eles.entrySet()) {
             JSON value = entry.getValue();
             appendBackspace(sb, identCnt);
-            Tools.append(sb, JSONConstants.STR_SEP02 + entry.getKey() + JSONConstants.STR_SEP02 + JSONConstants.ONE_BACKSPACE + JSONConstants.KV_SEP + JSONConstants.ONE_BACKSPACE);
+            Tools.append(sb, JSONConstants.STR_SEP02 + entry.getKey() + JSONConstants.STR_SEP02 +
+                    JSONConstants.ONE_BACKSPACE + JSONConstants.KV_SEP + JSONConstants.ONE_BACKSPACE);
             if (JSONType.OBJECT == value.type()) {
                 Tools.appendCRLF(sb, Tools.EMPTY_STR);
                 toString((JSONObject) value.value(), indentFactor, depth + 1, sb);
@@ -408,7 +432,8 @@ public final class JSONParseUtils {
      * @date 4/29/2017 12:35 PM
      * @since 1.0
      */
-    private static Object toBeanArray(Object obj, JSONConfig config, Class argClazz) throws IllegalAccessException, InstantiationException {
+    private static Object toBeanArray(Object obj, JSONConfig config, Class argClazz)
+            throws IllegalAccessException, InstantiationException {
         if (argClazz.isArray()) {
             if (obj instanceof JSONArray) {
                 JSONArray arr = (JSONArray) obj;
@@ -425,72 +450,81 @@ public final class JSONParseUtils {
     /**
      * 将给定的JSONObject转换为给定的Map
      *
-     * @param obj      给定的JSONObject
-     * @param argClazz 需要转换的类型
+     * @param obj  给定的JSONObject
+     * @param type 需要转换的类型
      * @return java.lang.Object
      * @author Jerry.X.He
      * @date 4/29/2017 4:13 PM
      * @since 1.0
      */
-    private static Map objToMap(JSONObject obj, Class argClazz)
+    private static Map objToMap(JSONObject obj, JSONConfig config, Type type)
             throws IllegalAccessException, InstantiationException {
+        Class argClazz = getClassBoundsType(type);
+
         int modifier = argClazz.getModifiers();
-        if(Modifier.isAbstract(modifier) || Modifier.isInterface(modifier) ) {
-            return obj;
+        Map result = null;
+        if (Modifier.isAbstract(modifier) || Modifier.isInterface(modifier)) {
+            result = new LinkedHashMap<>();
+        }
+        if (result == null) {
+            result = (Map) argClazz.newInstance();
         }
 
-        Map map = (Map) argClazz.newInstance();
-        map.putAll(obj);
-        return map;
+        putObjToMap(obj, config, result, type);
+        return result;
     }
 
     /**
      * 将给定的JSONArray转换为给定的List
      *
-     * @param arr      给定的JSONOArray
-     * @param argClazz 需要转换的类型
+     * @param arr  给定的JSONOArray
+     * @param type 需要转换的类型
      * @return java.lang.Object
      * @author Jerry.X.He
      * @date 4/29/2017 4:13 PM
      * @since 1.0
      */
-    private static List arrToList(JSONArray arr, Class argClazz)
+    private static List arrToList(JSONArray arr, JSONConfig config, Type type)
             throws IllegalAccessException, InstantiationException {
+        Class argClazz = getClassBoundsType(type);
+
         List result = null;
         int modifier = argClazz.getModifiers();
-        if(Modifier.isAbstract(modifier) || Modifier.isInterface(modifier) ) {
+        if (Modifier.isAbstract(modifier) || Modifier.isInterface(modifier)) {
             result = new ArrayList<>();
         }
-
-        if(result == null) {
+        if (result == null) {
             result = (List) argClazz.newInstance();
         }
-        result.addAll(arr);
+
+        putArrayToColl(arr, config, result, type);
         return result;
     }
 
     /**
      * 将给定的JSONArray转换为给定的Set
      *
-     * @param arr      给定的JSONOArray
-     * @param argClazz 需要转换的类型
+     * @param arr  给定的JSONOArray
+     * @param type 需要转换的类型
      * @return java.lang.Object
      * @author Jerry.X.He
      * @date 4/29/2017 4:13 PM
      * @since 1.0
      */
-    private static Set arrToSet(JSONArray arr, Class argClazz)
+    private static Set arrToSet(JSONArray arr, JSONConfig config, Type type)
             throws IllegalAccessException, InstantiationException {
+        Class argClazz = getClassBoundsType(type);
+
         Set result = null;
         int modifier = argClazz.getModifiers();
-        if(Modifier.isAbstract(modifier) || Modifier.isInterface(modifier) ) {
+        if (Modifier.isAbstract(modifier) || Modifier.isInterface(modifier)) {
             result = new LinkedHashSet<>();
         }
-
-        if(result == null) {
+        if (result == null) {
             result = (Set) argClazz.newInstance();
         }
-        result.addAll(arr);
+
+        putArrayToColl(arr, config, result, type);
         return result;
     }
 
@@ -752,5 +786,116 @@ public final class JSONParseUtils {
 
         return null;
     }
+
+    /**
+     * 将给定的JSONArray中的元素添加到result中
+     *
+     * @param arr    给定的JSONArray
+     * @param config 解析json的config
+     * @param result 需要添加的目标元素集合
+     * @param type   集合元素的类型
+     * @return void
+     * @author Jerry.X.He
+     * @date 4/30/2017 10:30 AM
+     * @since 1.0
+     */
+    private static void putArrayToColl(JSONArray arr, JSONConfig config, Collection result, Type type)
+            throws IllegalAccessException, InstantiationException {
+        // field specified type parameters
+        if (type instanceof ParameterizedType) {
+            Type typeParam = ((ParameterizedType) type).getActualTypeArguments()[0];
+            for (int i = 0, len = arr.size(); i < len; i++) {
+                result.add(toBean(arr.get(i), config, typeParam));
+            }
+        } else {
+            result.addAll(arr);
+        }
+    }
+
+    /**
+     * 将给定的JSONObject中的元素添加到result中
+     *
+     * @param obj    给定的JSONObject
+     * @param config 解析json的config
+     * @param result 需要添加的目标元素集合
+     * @param type   集合元素的类型
+     * @return void
+     * @author Jerry.X.He
+     * @date 4/30/2017 10:30 AM
+     * @since 1.0
+     */
+    private static void putObjToMap(JSONObject obj, JSONConfig config, Map result, Type type)
+            throws IllegalAccessException, InstantiationException {
+        // field specified type parameters
+        if (type instanceof ParameterizedType) {
+            Type keyTypeParam = ((ParameterizedType) type).getActualTypeArguments()[0];
+            Type valueTypeParam = ((ParameterizedType) type).getActualTypeArguments()[1];
+            for (Map.Entry<String, Object> entry : obj.entrySet()) {
+                result.put(toBean(entry.getKey(), config, keyTypeParam), toBean(entry.getValue(), config, valueTypeParam));
+            }
+        } else {
+            result.putAll(obj);
+        }
+    }
+
+    /**
+     * 获取给定的Type对应的rawType
+     * 注 : 这里没有处理TypeVariable, WildcardType [因为这里的type是字段相关的type]
+     *
+     * @param type 给定的Type
+     * @return java.lang.Class<T>
+     * @author Jerry.X.He
+     * @date 4/30/2017 10:08 AM
+     * @since 1.0
+     */
+    private static <T> Class<T> getClassBoundsType(Type type) {
+        Integer typeCode = CACHED_TYPE_2_TYPE_IMPL.get(type);
+        if(typeCode != null) {
+            Class<T> argClazz = null;
+            if(TYPE_PARAMETER_TYPE.equals(typeCode)) {
+                argClazz = (Class<T>) ((ParameterizedType) type).getRawType();
+            } else if(TYPE_GENERIC_ARRAY.equals(typeCode)) {
+                argClazz = (Class<T>) ((GenericArrayType) type).getGenericComponentType();
+            } else if(TYPE_CLASS.equals(typeCode)) {
+                argClazz = (Class<T>) type;
+            }
+
+            return argClazz;
+        }
+
+        Class<T> argClazz = null;
+        if (type instanceof ParameterizedType) {
+            argClazz = (Class<T>) ((ParameterizedType) type).getRawType();
+            CACHED_TYPE_2_TYPE_IMPL.put(type, TYPE_PARAMETER_TYPE);
+        } else if (type instanceof GenericArrayType) {
+            argClazz = (Class<T>) ((GenericArrayType) type).getGenericComponentType();
+            CACHED_TYPE_2_TYPE_IMPL.put(type, TYPE_GENERIC_ARRAY);
+        } else {
+            argClazz = (Class<T>) type;
+            CACHED_TYPE_2_TYPE_IMPL.put(type, TYPE_CLASS);
+        }
+
+        return argClazz;
+    }
+
+    /**
+     * 判断给定的Type是否是ParameterizedType 或者GenericArrayType 的实例
+     *
+     * @param type 给定的type
+     * @return boolean
+     * @author Jerry.X.He
+     * @date 4/30/2017 10:38 AM
+     * @since 1.0
+     */
+    private static boolean isTypeParameterizedOrGenericArray(Type type) {
+        Integer typeCode = CACHED_TYPE_2_TYPE_IMPL.get(type);
+        if(typeCode != null) {
+            return (TYPE_PARAMETER_TYPE.equals(typeCode)) || (TYPE_GENERIC_ARRAY.equals(typeCode));
+        }
+
+        return (type instanceof ParameterizedType) || (type instanceof GenericArrayType);
+    }
+
+
 
 }

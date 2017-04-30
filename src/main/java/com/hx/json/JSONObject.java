@@ -9,6 +9,7 @@ import com.hx.log.util.Tools;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.*;
 
 import static com.hx.log.util.Log.info;
@@ -869,7 +870,8 @@ public class JSONObject implements JSON, Map {
                     } else if (String.class == argClazz) {
                         method.invoke(result, obj.optString(key));
                     } else {
-                        Object valueObj = JSONParseUtils.toBean(obj.opt(key), config, argClazz);
+                        Type paramType = method.getGenericParameterTypes()[0];
+                        Object valueObj = JSONParseUtils.toBean(obj.opt(key), config, paramType);
                         method.invoke(result, argClazz.cast(valueObj));
                     }
                 }
