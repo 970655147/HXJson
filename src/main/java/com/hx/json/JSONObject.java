@@ -732,6 +732,9 @@ public class JSONObject implements JSON, Map {
      * @since 1.0
      */
     public static JSONObject fromString(WordsSeprator sep, JSONConfig config, boolean checkEnd) {
+        if(sep == null) {
+            return NULL_JSON_OBJECT;
+        }
         Tools.assert0(JSONConstants.OBJ_START.equals(sep.next()), "expect a : " + JSONConstants.OBJ_START + " ! around : " + sep.currentAndRest());
         JSONObject result = new JSONObject();
 
@@ -765,6 +768,10 @@ public class JSONObject implements JSON, Map {
     }
 
     public static JSONObject fromString(String str, JSONConfig config) {
+        if(str == null) {
+            return NULL_JSON_OBJECT;
+        }
+
         WordsSeprator sep = new WordsSeprator(str, JSONConstants.JSON_SEPS, JSONConstants.NEED_TO_ESCAPE, true, false);
         return fromString(sep, config, true);
     }
@@ -780,6 +787,10 @@ public class JSONObject implements JSON, Map {
      * @since 1.0
      */
     public static JSONObject fromObject(JSONObject obj, JSONConfig config) {
+        if(obj == null) {
+            return NULL_JSON_OBJECT;
+        }
+
         JSONObject result = new JSONObject();
         for (Entry<String, JSON> entry : obj.eles.entrySet()) {
             String key = entry.getKey();
@@ -831,9 +842,13 @@ public class JSONObject implements JSON, Map {
      * @since 1.0
      */
     public static JSONObject fromMap(Map map, JSONConfig config) {
+        if(map == null) {
+            return NULL_JSON_OBJECT;
+        }
+
         JSONObject result = new JSONObject();
         for (Object key : map.keySet()) {
-            result.put(String.valueOf(key), map.get(key));
+            result.put(String.valueOf(key), JSONParseUtils.fromBean(map.get(key), config));
         }
         return result;
     }
@@ -849,13 +864,16 @@ public class JSONObject implements JSON, Map {
      * @since 1.0
      */
     public static JSONObject fromBean(Object obj, JSONConfig config) {
-        JSONObject result = new JSONObject();
+        if(obj == null) {
+            return NULL_JSON_OBJECT;
+        }
         Class clazz = obj.getClass();
         int clazzModifier = clazz.getModifiers();
         if ((!Modifier.isPublic(clazzModifier)) || (Modifier.isAbstract(clazzModifier))) {
             return NULL_JSON_OBJECT;
         }
 
+        JSONObject result = new JSONObject();
         Method[] methods = clazz.getDeclaredMethods();
         try {
             for (Method method : methods) {
@@ -885,8 +903,7 @@ public class JSONObject implements JSON, Map {
                     } else if (String.class == resultClazz) {
                         result.put(key, String.valueOf(invokeResult));
                     } else {
-                        Type type = method.getGenericReturnType();
-                        result.put(key, JSONParseUtils.fromBean(invokeResult, config, type));
+                        result.put(key, JSONParseUtils.fromBean(invokeResult, config));
                     }
                 }
             }

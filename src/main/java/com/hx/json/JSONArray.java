@@ -687,6 +687,9 @@ public class JSONArray implements JSON, List, RandomAccess {
      * @since 1.0
      */
     public static JSONArray fromString(WordsSeprator sep, JSONConfig config, boolean checkEnd) {
+        if(sep == null) {
+            return NULL_JSON_ARRAY;
+        }
         Tools.assert0(JSONConstants.ARR_START.equals(sep.next()), "expect a : " + JSONConstants.ARR_START + " ! around : " + sep.currentAndRest());
         JSONArray result = new JSONArray();
 
@@ -713,6 +716,10 @@ public class JSONArray implements JSON, List, RandomAccess {
     }
 
     public static JSONArray fromString(String str, JSONConfig config) {
+        if(str == null) {
+            return NULL_JSON_ARRAY;
+        }
+
         WordsSeprator sep = new WordsSeprator(str, JSONConstants.JSON_SEPS, JSONConstants.NEED_TO_ESCAPE, true, false);
         return fromString(sep, config, true);
     }
@@ -728,6 +735,10 @@ public class JSONArray implements JSON, List, RandomAccess {
      * @since 1.0
      */
     public static JSONArray fromArray(JSONArray arr, JSONConfig config) {
+        if(arr == null) {
+            return NULL_JSON_ARRAY;
+        }
+
         JSONArray result = new JSONArray();
         int idx = 0;
         for (JSON value : arr.eles) {
@@ -780,9 +791,13 @@ public class JSONArray implements JSON, List, RandomAccess {
      * @since 1.0
      */
     public static JSONArray fromCollection(Collection coll, JSONConfig config) {
+        if(coll == null) {
+            return NULL_JSON_ARRAY;
+        }
+
         JSONArray result = new JSONArray();
         for(Object ele : coll) {
-            JSON jsonEle = JSONParseUtils.fromBean(ele, config, JSONObject.class);
+            JSON jsonEle = JSONParseUtils.fromBean(ele, config);
             result.add(jsonEle);
         }
         return result;
@@ -799,7 +814,120 @@ public class JSONArray implements JSON, List, RandomAccess {
      * @since 1.0
      */
     public static JSONArray fromArray(Object obj, JSONConfig config) {
-        return (JSONArray) JSONParseUtils.fromBean(obj, config, obj.getClass());
+        if(obj == null) {
+            return NULL_JSON_ARRAY;
+        }
+        Class argClazz = obj.getClass();
+        if(! argClazz.getClass().isArray()) {
+            return NULL_JSON_ARRAY;
+        }
+
+        JSONArray result = new JSONArray();
+        if ((boolean[].class == argClazz) || (Boolean[].class == argClazz)) {
+            if (boolean[].class == argClazz) {
+                boolean[] arr = (boolean[]) argClazz.cast(obj);
+                for (boolean ele : arr) {
+                    result.add(ele);
+                }
+                return result;
+            } else if (Boolean[].class == argClazz) {
+                Boolean[] arr = (Boolean[]) argClazz.cast(obj);
+                for (Boolean ele : arr) {
+                    result.add(ele);
+                }
+                return result;
+            }
+        } else if (((int[].class == argClazz) || (byte[].class == argClazz) || (short[].class == argClazz))
+                || ((Integer[].class == argClazz) || (Byte[].class == argClazz) || (Short[].class == argClazz))
+                ) {
+            if ((int[].class == argClazz)) {
+                int[] arr = (int[]) argClazz.cast(obj);
+                for (int ele : arr) {
+                    result.add(ele);
+                }
+                return result;
+            } else if ((byte[].class == argClazz)) {
+                byte[] arr = (byte[]) argClazz.cast(obj);
+                for (byte ele : arr) {
+                    result.add(ele);
+                }
+                return result;
+            } else if ((short[].class == argClazz)) {
+                short[] arr = (short[]) argClazz.cast(obj);
+                for (short ele : arr) {
+                    result.add(ele);
+                }
+                return result;
+            } else if ((Integer[].class == argClazz)) {
+                Integer[] arr = (Integer[]) argClazz.cast(obj);
+                for (Integer ele : arr) {
+                    result.add(ele);
+                }
+                return result;
+            } else if ((Byte[].class == argClazz)) {
+                Byte[] arr = (Byte[]) argClazz.cast(obj);
+                for (Byte ele : arr) {
+                    result.add(ele);
+                }
+                return result;
+            } else if ((Short[].class == argClazz)) {
+                Short[] arr = (Short[]) argClazz.cast(obj);
+                for (Short ele : arr) {
+                    result.add(ele);
+                }
+                return result;
+            }
+        } else if ((long[].class == argClazz) || (Long[].class == argClazz)) {
+            if (long[].class == argClazz) {
+                long[] arr = (long[]) argClazz.cast(obj);
+                for (long ele : arr) {
+                    result.add(ele);
+                }
+                return result;
+            } else if (Long[].class == argClazz) {
+                Long[] arr = (Long[]) argClazz.cast(obj);
+                for (Long ele : arr) {
+                    result.add(ele);
+                }
+                return result;
+            }
+        } else if ((float[].class == argClazz) || (Float[].class == argClazz)) {
+            if (float[].class == argClazz) {
+                float[] arr = (float[]) argClazz.cast(obj);
+                for (float ele : arr) {
+                    result.add(ele);
+                }
+                return result;
+            } else if (Float[].class == argClazz) {
+                Float[] arr = (Float[]) argClazz.cast(obj);
+                for (Float ele : arr) {
+                    result.add(ele);
+                }
+                return result;
+            }
+        } else if ((double[].class == argClazz) || (Double[].class == argClazz)) {
+            if (double[].class == argClazz) {
+                double[] arr = (double[]) argClazz.cast(obj);
+                for (double ele : arr) {
+                    result.add(ele);
+                }
+                return result;
+            } else if (Double[].class == argClazz) {
+                Double[] arr = (Double[]) argClazz.cast(obj);
+                for (Double ele : arr) {
+                    result.add(ele);
+                }
+                return result;
+            }
+        } else {
+            Object[] arr = (Object[]) argClazz.cast(obj);
+            for (Object ele : arr) {
+                result.add(JSONParseUtils.fromBean(ele, config));
+            }
+            return result;
+        }
+
+        return NULL_JSON_ARRAY;
     }
 
     /**

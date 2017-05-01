@@ -94,46 +94,43 @@ public final class JSONParseUtils {
      *
      * @param obj    给定的Object, 可能为JSONObject, JSONArray等等
      * @param config 解析json的config
-     * @param type   目标类型
      * @return java.lang.Object
      * @author Jerry.X.He
      * @date 4/29/2017 11:23 AM
      * @since 1.0
      */
-    public static JSON fromBean(Object obj, JSONConfig config, Type type) {
+    public static JSON fromBean(Object obj, JSONConfig config) {
         if (obj == null) {
             return JSONNull.getInstance();
         }
-
         if (obj instanceof JSON) {
             return (JSON) obj;
         }
 
-        Class objClazz = obj.getClass();
-        if ((boolean.class == objClazz) || (Boolean.class == objClazz)) {
+        Class clazz = obj.getClass();
+        if ((boolean.class == clazz) || (Boolean.class == clazz)) {
             return JSONBool.fromObject((boolean) obj);
-        } else if (((int.class == objClazz) || (Integer.class == objClazz))
-                || ((byte.class == objClazz) || (Byte.class == objClazz))
-                || ((short.class == objClazz) || (Short.class == objClazz))
+        } else if (((int.class == clazz) || (Integer.class == clazz))
+                || ((byte.class == clazz) || (Byte.class == clazz))
+                || ((short.class == clazz) || (Short.class == clazz))
                 ) {
             return JSONInt.fromObject((int) obj);
-        } else if ((long.class == objClazz) || (Long.class == objClazz)) {
+        } else if ((long.class == clazz) || (Long.class == clazz)) {
             return JSONLong.fromObject((long) obj);
-        } else if ((float.class == objClazz) || (Float.class == objClazz)) {
+        } else if ((float.class == clazz) || (Float.class == clazz)) {
             return JSONFloat.fromObject((float) obj);
-        } else if ((double.class == objClazz) || (Double.class == objClazz)) {
+        } else if ((double.class == clazz) || (Double.class == clazz)) {
             return JSONDouble.fromObject((double) obj);
-        } else if (String.class == objClazz) {
+        } else if (String.class == clazz) {
             return JSONStr.fromObject((String) obj);
         }
 
-        Class returnClazz = getClassBoundsType(type);
-        if (Collection.class.isAssignableFrom(returnClazz)) {
+        if (Collection.class.isAssignableFrom(clazz)) {
             return JSONArray.fromObject(obj);
-        } else if (Map.class.isAssignableFrom(returnClazz)) {
+        } else if (Map.class.isAssignableFrom(clazz)) {
             return JSONObject.fromObject(obj);
-        } else if (returnClazz.isArray()) {
-            return fromBeanArray(obj, config, returnClazz);
+        } else if (clazz.isArray()) {
+            return JSONArray.fromArray(obj, config);
         } else {
             return JSONParseUtils.parse(obj, config);
         }
@@ -544,25 +541,6 @@ public final class JSONParseUtils {
     }
 
     /**
-     * 将给定的数组转换为JSONArray
-     *
-     * @param obj      给定的对象
-     * @param config   解析json的config
-     * @param argClazz 目标类型
-     * @return java.lang.Object
-     * @author Jerry.X.He
-     * @date 4/29/2017 12:35 PM
-     * @since 1.0
-     */
-    private static JSON fromBeanArray(Object obj, JSONConfig config, Class argClazz) {
-        if (argClazz.isAssignableFrom(obj.getClass())) {
-            return array2JSONArray(obj, config, argClazz);
-        }
-
-        return JSONNull.getInstance();
-    }
-
-    /**
      * 将给定的Object转换为目标类型的数组
      *
      * @param obj      给定的对象
@@ -786,127 +764,6 @@ public final class JSONParseUtils {
                 attr[i] = toBean(arr.get(i), config, componentClazz);
             }
             return attr;
-        }
-
-        return null;
-    }
-
-    /**
-     * 将给定的集合解析为目标类型[数组]
-     *
-     * @param obj      给定的数组
-     * @param config   解析json的config
-     * @param argClazz 目标类型[数组]
-     * @return java.lang.Object
-     * @author Jerry.X.He
-     * @date 4/29/2017 12:40 PM
-     * @since 1.0
-     */
-    private static JSON array2JSONArray(Object obj, JSONConfig config, Class argClazz) {
-        JSONArray result = new JSONArray();
-        if ((boolean[].class == argClazz) || (Boolean[].class == argClazz)) {
-            if (boolean[].class == argClazz) {
-                boolean[] arr = (boolean[]) argClazz.cast(obj);
-                for (boolean ele : arr) {
-                    result.add(ele);
-                }
-                return result;
-            } else if (Boolean[].class == argClazz) {
-                Boolean[] arr = (Boolean[]) argClazz.cast(obj);
-                for (Boolean ele : arr) {
-                    result.add(ele);
-                }
-                return result;
-            }
-        } else if (((int[].class == argClazz) || (byte[].class == argClazz) || (short[].class == argClazz))
-                || ((Integer[].class == argClazz) || (Byte[].class == argClazz) || (Short[].class == argClazz))
-                ) {
-            if ((int[].class == argClazz)) {
-                int[] arr = (int[]) argClazz.cast(obj);
-                for (int ele : arr) {
-                    result.add(ele);
-                }
-                return result;
-            } else if ((byte[].class == argClazz)) {
-                byte[] arr = (byte[]) argClazz.cast(obj);
-                for (byte ele : arr) {
-                    result.add(ele);
-                }
-                return result;
-            } else if ((short[].class == argClazz)) {
-                short[] arr = (short[]) argClazz.cast(obj);
-                for (short ele : arr) {
-                    result.add(ele);
-                }
-                return result;
-            } else if ((Integer[].class == argClazz)) {
-                Integer[] arr = (Integer[]) argClazz.cast(obj);
-                for (Integer ele : arr) {
-                    result.add(ele);
-                }
-                return result;
-            } else if ((Byte[].class == argClazz)) {
-                Byte[] arr = (Byte[]) argClazz.cast(obj);
-                for (Byte ele : arr) {
-                    result.add(ele);
-                }
-                return result;
-            } else if ((Short[].class == argClazz)) {
-                Short[] arr = (Short[]) argClazz.cast(obj);
-                for (Short ele : arr) {
-                    result.add(ele);
-                }
-                return result;
-            }
-        } else if ((long[].class == argClazz) || (Long[].class == argClazz)) {
-            if (long[].class == argClazz) {
-                long[] arr = (long[]) argClazz.cast(obj);
-                for (long ele : arr) {
-                    result.add(ele);
-                }
-                return result;
-            } else if (Long[].class == argClazz) {
-                Long[] arr = (Long[]) argClazz.cast(obj);
-                for (Long ele : arr) {
-                    result.add(ele);
-                }
-                return result;
-            }
-        } else if ((float[].class == argClazz) || (Float[].class == argClazz)) {
-            if (float[].class == argClazz) {
-                float[] arr = (float[]) argClazz.cast(obj);
-                for (float ele : arr) {
-                    result.add(ele);
-                }
-                return result;
-            } else if (Float[].class == argClazz) {
-                Float[] arr = (Float[]) argClazz.cast(obj);
-                for (Float ele : arr) {
-                    result.add(ele);
-                }
-                return result;
-            }
-        } else if ((double[].class == argClazz) || (Double[].class == argClazz)) {
-            if (double[].class == argClazz) {
-                double[] arr = (double[]) argClazz.cast(obj);
-                for (double ele : arr) {
-                    result.add(ele);
-                }
-                return result;
-            } else if (Double[].class == argClazz) {
-                Double[] arr = (Double[]) argClazz.cast(obj);
-                for (Double ele : arr) {
-                    result.add(ele);
-                }
-                return result;
-            }
-        } else {
-            Class componentClazz = argClazz.getComponentType();
-            Object[] arr = (Object[]) argClazz.cast(obj);
-            for (Object ele : arr) {
-                result.add(fromBean(ele, config, componentClazz));
-            }
-            return result;
         }
 
         return null;
