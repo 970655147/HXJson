@@ -1,8 +1,9 @@
-package com.hx.json;
+package com.hx.json.config.simple;
 
+import com.hx.json.*;
 import com.hx.json.interf.JSON;
-import com.hx.json.interf.JSONConfig;
-import com.hx.json.interf.JSONValueNodeParser;
+import com.hx.json.config.interf.JSONConfig;
+import com.hx.json.config.interf.JSONValueNodeParser;
 import com.hx.json.util.JSONConstants;
 import com.hx.log.str.WordsSeprator;
 import com.hx.log.util.Tools;

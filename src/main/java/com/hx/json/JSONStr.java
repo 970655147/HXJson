@@ -11,7 +11,7 @@ import com.hx.json.interf.JSONType;
  * @version 1.0
  * @date 4/15/2017 11:55 AM
  */
-class JSONStr implements JSON {
+public class JSONStr implements JSON {
 
     /**
      * JSONStr³ÖÓÐµÄ×Ö·û´®
@@ -66,7 +66,7 @@ class JSONStr implements JSON {
      * @date 4/15/2017 5:18 PM
      * @since 1.0
      */
-    static JSON fromObject(Object obj) {
+    public static JSON fromObject(Object obj) {
         if((obj == null) || (obj == JSONNull.getInstance()) ) {
             return JSONNull.getInstance();
         }

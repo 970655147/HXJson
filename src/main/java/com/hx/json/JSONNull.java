@@ -11,7 +11,7 @@ import com.hx.log.util.Tools;
  * @version 1.0
  * @date 5/1/2017 1:04 AM
  */
-class JSONNull implements JSON {
+public class JSONNull implements JSON {
 
     /**
      * JSONObj(null)
@@ -66,7 +66,7 @@ class JSONNull implements JSON {
      * @date 4/15/2017 5:18 PM
      * @since 1.0
      */
-    static JSONNull fromObject(Object obj) {
+    public static JSONNull fromObject(Object obj) {
         return getInstance();
     }
 

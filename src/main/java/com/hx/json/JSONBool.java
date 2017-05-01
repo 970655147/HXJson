@@ -10,7 +10,7 @@ import com.hx.json.interf.JSONType;
  * @version 1.0
  * @date 4/15/2017 11:59 AM
  */
-class JSONBool implements JSON {
+public class JSONBool implements JSON {
 
     /**
      * 当前JSON持有的val
@@ -65,7 +65,7 @@ class JSONBool implements JSON {
      * @date 4/15/2017 5:18 PM
      * @since 1.0
      */
-    static JSON fromObject(boolean bool) {
+    public static JSON fromObject(boolean bool) {
         return new JSONBool(bool);
     }
 

@@ -11,7 +11,7 @@ import com.hx.json.interf.JSONType;
  * @version 1.0
  * @date 4/15/2017 6:08 PM
  */
-class JSONFloat implements JSON {
+public class JSONFloat implements JSON {
 
     /**
      * 当前JSON持有的val
@@ -66,7 +66,7 @@ class JSONFloat implements JSON {
      * @date 4/15/2017 5:18 PM
      * @since 1.0
      */
-    static JSON fromObject(float val) {
+    public static JSON fromObject(float val) {
         return new JSONFloat(val);
     }
 

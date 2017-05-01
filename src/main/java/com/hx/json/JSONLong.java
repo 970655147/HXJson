@@ -10,7 +10,7 @@ import com.hx.json.interf.JSONType;
  * @version 1.0
  * @date 4/15/2017 6:06 PM
  */
-class JSONLong implements JSON {
+public class JSONLong implements JSON {
 
     /**
      * 当前JSON持有的val
@@ -65,7 +65,7 @@ class JSONLong implements JSON {
      * @date 4/15/2017 5:18 PM
      * @since 1.0
      */
-    static JSON fromObject(long val) {
+    public static JSON fromObject(long val) {
         return new JSONLong(val);
     }
 

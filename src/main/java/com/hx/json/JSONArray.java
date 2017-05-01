@@ -1,10 +1,10 @@
 package com.hx.json;
 
+import com.hx.json.config.simple.SimpleJSONConfig;
 import com.hx.json.interf.JSON;
-import com.hx.json.interf.JSONConfig;
+import com.hx.json.config.interf.JSONConfig;
 import com.hx.json.interf.JSONType;
 import com.hx.json.util.JSONConstants;
-import com.hx.log.json.JSONUtils;
 import com.hx.log.str.WordsSeprator;
 import com.hx.log.util.Tools;
 
@@ -686,7 +686,7 @@ public class JSONArray implements JSON, List, RandomAccess {
      * @date 4/15/2017 5:32 PM
      * @since 1.0
      */
-    static JSONArray fromString(WordsSeprator sep, JSONConfig config, boolean checkEnd) {
+    public static JSONArray fromString(WordsSeprator sep, JSONConfig config, boolean checkEnd) {
         Tools.assert0(JSONConstants.ARR_START.equals(sep.next()), "expect a : " + JSONConstants.ARR_START + " ! around : " + sep.currentAndRest());
         JSONArray result = new JSONArray();
 
@@ -712,7 +712,7 @@ public class JSONArray implements JSON, List, RandomAccess {
         return result;
     }
 
-    private static JSONArray fromString(String str, JSONConfig config) {
+    public static JSONArray fromString(String str, JSONConfig config) {
         WordsSeprator sep = new WordsSeprator(str, JSONConstants.JSON_SEPS, JSONConstants.NEED_TO_ESCAPE, true, false);
         return fromString(sep, config, true);
     }
@@ -727,7 +727,7 @@ public class JSONArray implements JSON, List, RandomAccess {
      * @date 4/30/2017 1:22 PM
      * @since 1.0
      */
-    private static JSONArray fromArray(JSONArray arr, JSONConfig config) {
+    public static JSONArray fromArray(JSONArray arr, JSONConfig config) {
         JSONArray result = new JSONArray();
         int idx = 0;
         for (JSON value : arr.eles) {
@@ -779,7 +779,7 @@ public class JSONArray implements JSON, List, RandomAccess {
      * @date 4/29/2017 1:54 PM
      * @since 1.0
      */
-    private static JSONArray fromCollection(Collection coll, JSONConfig config) {
+    public static JSONArray fromCollection(Collection coll, JSONConfig config) {
         JSONArray result = new JSONArray();
         for(Object ele : coll) {
             JSON jsonEle = JSONParseUtils.fromBean(ele, config, JSONObject.class);
@@ -798,7 +798,7 @@ public class JSONArray implements JSON, List, RandomAccess {
      * @date 5/1/2017 5:55 PM
      * @since 1.0
      */
-    private static JSONArray fromArray(Object obj, JSONConfig config) {
+    public static JSONArray fromArray(Object obj, JSONConfig config) {
         return (JSONArray) JSONParseUtils.fromBean(obj, config, obj.getClass());
     }
 

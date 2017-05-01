@@ -10,7 +10,7 @@ import com.hx.json.interf.JSONType;
  * @version 1.0
  * @date 4/15/2017 11:58 AM
  */
-class JSONInt implements JSON {
+public class JSONInt implements JSON {
 
     /**
      * 当前JSON持有的val
@@ -65,7 +65,7 @@ class JSONInt implements JSON {
      * @date 4/15/2017 5:18 PM
      * @since 1.0
      */
-    static JSON fromObject(int val) {
+    public static JSON fromObject(int val) {
         return new JSONInt(val);
     }
 

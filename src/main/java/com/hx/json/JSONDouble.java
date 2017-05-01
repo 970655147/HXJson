@@ -10,7 +10,7 @@ import com.hx.json.interf.JSONType;
  * @version 1.0
  * @date 4/15/2017 6:08 PM
  */
-class JSONDouble implements JSON {
+public class JSONDouble implements JSON {
 
     /**
      * 当前JSON持有的val
@@ -65,7 +65,7 @@ class JSONDouble implements JSON {
      * @date 4/15/2017 5:18 PM
      * @since 1.0
      */
-    static JSON fromObject(double val) {
+    public static JSON fromObject(double val) {
         return new JSONDouble(val);
     }
 

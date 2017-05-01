@@ -10,7 +10,7 @@ import com.hx.json.interf.JSONType;
  * @version 1.0
  * @date 4/15/2017 5:21 PM
  */
-class JSONObj implements JSON {
+public class JSONObj implements JSON {
 
     /**
      * 当前JSON持有的Object
@@ -65,7 +65,7 @@ class JSONObj implements JSON {
      * @date 4/15/2017 5:18 PM
      * @since 1.0
      */
-    static JSON fromObject(Object obj) {
+    public static JSON fromObject(Object obj) {
         if((obj == null) || (obj == JSONNull.getInstance()) ) {
             return JSONNull.getInstance();
         }

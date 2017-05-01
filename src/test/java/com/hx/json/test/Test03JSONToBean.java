@@ -3,7 +3,7 @@ package com.hx.json.test;
 import com.hx.json.JSONArray;
 import com.hx.json.JSONObject;
 import com.hx.json.JSONParseUtils;
-import com.hx.json.SimpleJSONConfig;
+import com.hx.json.config.simple.SimpleJSONConfig;
 import com.hx.log.util.Log;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,8 +11,6 @@ import org.junit.Test;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import static com.hx.log.util.Log.info;

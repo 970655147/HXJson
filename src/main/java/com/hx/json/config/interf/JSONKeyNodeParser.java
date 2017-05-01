@@ -1,4 +1,4 @@
-package com.hx.json.interf;
+package com.hx.json.config.interf;
 
 /**
  * ½âÎöJSONkeyµÄparser

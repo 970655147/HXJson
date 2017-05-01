@@ -1,6 +1,6 @@
 package com.hx.json.test;
 
-import com.hx.json.JSONFieldKeyNodeParser;
+import com.hx.json.config.simple.JSONFieldKeyNodeParser;
 import com.hx.json.JSONObject;
 import com.hx.json.JSONParseUtils;
 import com.hx.json.interf.JSONField;

@@ -1,6 +1,6 @@
-package com.hx.json;
+package com.hx.json.config.simple;
 
-import com.hx.json.interf.JSONConfig;
+import com.hx.json.config.interf.JSONConfig;
 
 /**
  * JSONConfig的简单实现

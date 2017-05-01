@@ -1,7 +1,8 @@
 package com.hx.json;
 
+import com.hx.json.config.simple.SimpleJSONConfig;
 import com.hx.json.interf.JSON;
-import com.hx.json.interf.JSONConfig;
+import com.hx.json.config.interf.JSONConfig;
 import com.hx.json.interf.JSONType;
 import com.hx.json.util.JSONConstants;
 import com.hx.log.str.WordsSeprator;
@@ -730,7 +731,7 @@ public class JSONObject implements JSON, Map {
      * @date 4/15/2017 5:32 PM
      * @since 1.0
      */
-    static JSONObject fromString(WordsSeprator sep, JSONConfig config, boolean checkEnd) {
+    public static JSONObject fromString(WordsSeprator sep, JSONConfig config, boolean checkEnd) {
         Tools.assert0(JSONConstants.OBJ_START.equals(sep.next()), "expect a : " + JSONConstants.OBJ_START + " ! around : " + sep.currentAndRest());
         JSONObject result = new JSONObject();
 
@@ -763,7 +764,7 @@ public class JSONObject implements JSON, Map {
         return result;
     }
 
-    private static JSONObject fromString(String str, JSONConfig config) {
+    public static JSONObject fromString(String str, JSONConfig config) {
         WordsSeprator sep = new WordsSeprator(str, JSONConstants.JSON_SEPS, JSONConstants.NEED_TO_ESCAPE, true, false);
         return fromString(sep, config, true);
     }
@@ -778,7 +779,7 @@ public class JSONObject implements JSON, Map {
      * @date 4/30/2017 1:22 PM
      * @since 1.0
      */
-    private static JSONObject fromObject(JSONObject obj, JSONConfig config) {
+    public static JSONObject fromObject(JSONObject obj, JSONConfig config) {
         JSONObject result = new JSONObject();
         for (Entry<String, JSON> entry : obj.eles.entrySet()) {
             String key = entry.getKey();
@@ -829,7 +830,7 @@ public class JSONObject implements JSON, Map {
      * @date 4/30/2017 1:22 PM
      * @since 1.0
      */
-    private static JSONObject fromMap(Map map, JSONConfig config) {
+    public static JSONObject fromMap(Map map, JSONConfig config) {
         JSONObject result = new JSONObject();
         for (Object key : map.keySet()) {
             result.put(String.valueOf(key), map.get(key));
@@ -847,7 +848,7 @@ public class JSONObject implements JSON, Map {
      * @date 4/16/2017 11:49 AM
      * @since 1.0
      */
-    private static JSONObject fromBean(Object obj, JSONConfig config) {
+    public static JSONObject fromBean(Object obj, JSONConfig config) {
         JSONObject result = new JSONObject();
         Class clazz = obj.getClass();
         int clazzModifier = clazz.getModifiers();

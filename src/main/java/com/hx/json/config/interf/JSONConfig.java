@@ -1,4 +1,4 @@
-package com.hx.json.interf;
+package com.hx.json.config.interf;
 
 /**
  * 解析JSON的时候的相关配置

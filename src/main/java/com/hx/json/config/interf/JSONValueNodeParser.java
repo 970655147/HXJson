@@ -1,5 +1,6 @@
-package com.hx.json.interf;
+package com.hx.json.config.interf;
 
+import com.hx.json.interf.JSON;
 import com.hx.log.str.WordsSeprator;
 
 /**
