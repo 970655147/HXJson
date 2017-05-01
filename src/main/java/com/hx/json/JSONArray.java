@@ -55,7 +55,7 @@ public class JSONArray implements JSON, List, RandomAccess {
         } else if (obj instanceof Collection) {
             return fromCollection((Collection) obj, config);
         } else if (obj.getClass().isArray()) {
-            return (JSONArray) JSONParseUtils.fromBean(obj, config, obj.getClass());
+            return fromArray(obj, config);
         } else {
             return NULL_JSON_ARRAY;
         }
@@ -786,6 +786,20 @@ public class JSONArray implements JSON, List, RandomAccess {
             result.add(jsonEle);
         }
         return result;
+    }
+
+    /**
+     * 从给定的数组中构造一个JSONArray
+     *
+     * @param obj   给定的集合
+     * @param config 解析json的config
+     * @return com.hx.json.JSONArray
+     * @author Jerry.X.He
+     * @date 5/1/2017 5:55 PM
+     * @since 1.0
+     */
+    private static JSONArray fromArray(Object obj, JSONConfig config) {
+        return (JSONArray) JSONParseUtils.fromBean(obj, config, obj.getClass());
     }
 
     /**

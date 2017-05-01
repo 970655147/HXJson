@@ -1,9 +1,6 @@
 package com.hx.json;
 
-import com.hx.json.interf.JSON;
-import com.hx.json.interf.JSONConfig;
-import com.hx.json.interf.JSONType;
-import com.hx.json.interf.JSONValueNodeParser;
+import com.hx.json.interf.*;
 import com.hx.json.util.JSONConstants;
 import com.hx.log.cache.mem.LFUMCache;
 import com.hx.log.interf.Cache;
@@ -26,6 +23,10 @@ import java.util.*;
  */
 public final class JSONParseUtils {
 
+    /**
+     * 解析JSON的key的parser
+     */
+    private static JSONKeyNodeParser KEY_NODE_PARSER = new SimpleKeyNodeParser();
     /**
      * 解析JSONValue的parser
      */
@@ -219,6 +220,19 @@ public final class JSONParseUtils {
     }
 
     /**
+     * 配置当前Utils的JSONKeyNodeParser
+     *
+     * @param keyNodeParser 给定的JSONKeyNodeParser
+     * @return void
+     * @author Jerry.X.He
+     * @date 4/23/2017 2:55 PM
+     * @since 1.0
+     */
+    public static void setKeyNodeParser(JSONKeyNodeParser keyNodeParser) {
+        KEY_NODE_PARSER = keyNodeParser;
+    }
+
+    /**
      * 配置当前Utils的JSONValueNodeParser
      *
      * @param valueNodeParser 给定的JSONValueNodeParser
@@ -309,6 +323,38 @@ public final class JSONParseUtils {
         }
 
         return str;
+    }
+
+    /**
+     * 获取给定的clazz的getterMethodName对应的field的key
+     *
+     * @param clazz            给定的class
+     * @param getterMethodName 给定的field的getter
+     * @param config           解析json的config
+     * @return java.lang.String
+     * @author Jerry.X.He
+     * @date 5/1/2017 5:58 PM
+     * @since 1.0
+     */
+    static String getKeyForGetter(Class clazz, String getterMethodName, JSONConfig config) {
+        Tools.assert0(KEY_NODE_PARSER != null, "'KEY_NODE_PARSER' can't be null !");
+        return KEY_NODE_PARSER.getKeyForGetter(clazz, getterMethodName, config);
+    }
+
+    /**
+     * 获取给定的clazz的getterMethodName对应的field的key
+     *
+     * @param clazz            给定的class
+     * @param setterMethodName 给定的field的setter
+     * @param config           解析json的config
+     * @return java.lang.String
+     * @author Jerry.X.He
+     * @date 5/1/2017 5:58 PM
+     * @since 1.0
+     */
+    static String getKeyForSetter(Class clazz, String setterMethodName, JSONConfig config) {
+        Tools.assert0(KEY_NODE_PARSER != null, "'KEY_NODE_PARSER' can't be null !");
+        return KEY_NODE_PARSER.getKeyForSetter(clazz, setterMethodName, config);
     }
 
     /**
@@ -504,7 +550,7 @@ public final class JSONParseUtils {
      * @since 1.0
      */
     private static JSON fromBeanArray(Object obj, JSONConfig config, Class argClazz) {
-        if(argClazz.isAssignableFrom(obj.getClass()) ) {
+        if (argClazz.isAssignableFrom(obj.getClass())) {
             return array2JSONArray(obj, config, argClazz);
         }
 
@@ -853,7 +899,7 @@ public final class JSONParseUtils {
             Class componentClazz = argClazz.getComponentType();
             Object[] arr = (Object[]) argClazz.cast(obj);
             for (Object ele : arr) {
-                result.add(fromBean(ele, config, componentClazz) );
+                result.add(fromBean(ele, config, componentClazz));
             }
             return result;
         }

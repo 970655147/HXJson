@@ -4,7 +4,6 @@ import com.hx.json.interf.JSON;
 import com.hx.json.interf.JSONConfig;
 import com.hx.json.interf.JSONType;
 import com.hx.json.util.JSONConstants;
-import com.hx.log.json.JSONUtils;
 import com.hx.log.str.WordsSeprator;
 import com.hx.log.util.Constants;
 import com.hx.log.util.Tools;
@@ -866,7 +865,7 @@ public class JSONObject implements JSON, Map {
                         && (Modifier.isPublic(modifier) && (!Modifier.isStatic(modifier) && (!Modifier.isAbstract(modifier))))
                         && (method.getParameterTypes().length == 0)) {
                     Object invokeResult = method.invoke(obj);
-                    String key = Tools.lowerCaseFirstChar(JSONParseUtils.trimIfStartsWith(methodName, Constants.BEAN_GETTER_PREFIXES));
+                    String key = JSONParseUtils.getKeyForGetter(clazz, methodName, config);
 
                     Class resultClazz = invokeResult.getClass();
                     if ((boolean.class == resultClazz) || (Boolean.class == resultClazz)) {
@@ -944,7 +943,8 @@ public class JSONObject implements JSON, Map {
                 if (JSONParseUtils.startsWith(methodName, Constants.BEAN_SETTER_PREFIXES)
                         && (Modifier.isPublic(modifier) && (!Modifier.isStatic(modifier) && (!Modifier.isAbstract(modifier))))
                         && (method.getParameterTypes().length == 1)) {
-                    String key = Tools.lowerCaseFirstChar(JSONParseUtils.trimIfStartsWith(methodName, Constants.BEAN_SETTER_PREFIXES));
+                    String key = JSONParseUtils.getKeyForSetter(clazz, methodName, config);
+
                     Class argClazz = method.getParameterTypes()[0];
                     if ((boolean.class == argClazz) || (Boolean.class == argClazz)) {
                         method.invoke(result, obj.optBoolean(key));
