@@ -140,7 +140,7 @@ public class Test03JSONToBean {
         @Override
         public String toString() {
             return new JSONObject().element("name", name).element("friends", friends)
-                    .element("self", self).element("scores", scores).element("others", others)
+                    .element("self", self).element("scores", JSONArray.fromObject(scores)).element("others", others)
                     .toString();
         }
     }

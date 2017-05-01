@@ -882,8 +882,11 @@ public class JSONObject implements JSON, Map {
                         result.put(key, Float.valueOf(invokeResult.toString()).floatValue());
                     } else if ((double.class == resultClazz) || (Double.class == resultClazz)) {
                         result.put(key, Double.valueOf(invokeResult.toString()).doubleValue());
+                    } else if (String.class == resultClazz) {
+                        result.put(key, String.valueOf(invokeResult));
                     } else {
-                        result.put(key, invokeResult);
+                        Type type = method.getGenericReturnType();
+                        result.put(key, JSONParseUtils.fromBean(invokeResult, config, type));
                     }
                 }
             }
@@ -905,7 +908,7 @@ public class JSONObject implements JSON, Map {
      * @date 5/1/2017 2:04 AM
      * @since 1.0
      */
-    private Object put(String key, JSON value) {
+    protected Object put(String key, JSON value) {
         value = JSONParseUtils.normalizeJSON(value);
         Object result = eles.put(key, value);
         return result;

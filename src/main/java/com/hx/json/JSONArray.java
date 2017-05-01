@@ -55,7 +55,7 @@ public class JSONArray implements JSON, List, RandomAccess {
         } else if (obj instanceof Collection) {
             return fromCollection((Collection) obj, config);
         } else if (obj.getClass().isArray()) {
-            return fromArray(obj, config, obj.getClass());
+            return (JSONArray) JSONParseUtils.fromBean(obj, config, obj.getClass());
         } else {
             return NULL_JSON_ARRAY;
         }
@@ -781,112 +781,10 @@ public class JSONArray implements JSON, List, RandomAccess {
      */
     private static JSONArray fromCollection(Collection coll, JSONConfig config) {
         JSONArray result = new JSONArray();
-        result.addAll(coll);
-        return result;
-    }
-
-    /**
-     * 从给定的数组对象中提取JSONArray
-     *
-     * @param obj      给定的数组对象
-     * @param config   解析json的config
-     * @param argClazz 数组类型
-     * @return com.hx.json.JSONArray
-     * @author Jerry.X.He
-     * @date 4/29/2017 1:46 PM
-     * @since 1.0
-     */
-    private static JSONArray fromArray(Object obj, JSONConfig config, Class argClazz) {
-        JSONArray result = new JSONArray();
-        if ((boolean[].class == argClazz) || (Boolean[].class == argClazz)) {
-            if (boolean[].class == argClazz) {
-                boolean[] arr = (boolean[]) obj;
-                for (boolean ele : arr) {
-                    result.add(ele);
-                }
-            } else if (Boolean[].class == argClazz) {
-                Boolean[] arr = (Boolean[]) obj;
-                for (Boolean ele : arr) {
-                    result.add(ele);
-                }
-            }
-        } else if (((int[].class == argClazz) || (byte[].class == argClazz) || (short[].class == argClazz))
-                || ((Integer[].class == argClazz) || (Byte[].class == argClazz) || (Short[].class == argClazz))
-                ) {
-            if (int[].class == argClazz) {
-                int[] arr = (int[]) obj;
-                for (int ele : arr) {
-                    result.add(ele);
-                }
-            } else if (byte[].class == argClazz) {
-                byte[] arr = (byte[]) obj;
-                for (byte ele : arr) {
-                    result.add(ele);
-                }
-            } else if (short[].class == argClazz) {
-                short[] arr = (short[]) obj;
-                for (short ele : arr) {
-                    result.add(ele);
-                }
-            } else if (Integer[].class == argClazz) {
-                Integer[] arr = (Integer[]) obj;
-                for (Integer ele : arr) {
-                    result.add(ele);
-                }
-            } else if (Byte[].class == argClazz) {
-                Byte[] arr = (Byte[]) obj;
-                for (Byte ele : arr) {
-                    result.add(ele);
-                }
-            } else if (Short[].class == argClazz) {
-                Short[] arr = (Short[]) obj;
-                for (Short ele : arr) {
-                    result.add(ele);
-                }
-            }
-        } else if ((long[].class == argClazz) || (Long[].class == argClazz)) {
-            if (long[].class == argClazz) {
-                long[] arr = (long[]) obj;
-                for (long ele : arr) {
-                    result.add(ele);
-                }
-            } else if (Long[].class == argClazz) {
-                Long[] arr = (Long[]) obj;
-                for (Long ele : arr) {
-                    result.add(ele);
-                }
-            }
-        } else if ((float[].class == argClazz) || (Float[].class == argClazz)) {
-            if (float[].class == argClazz) {
-                float[] arr = (float[]) obj;
-                for (float ele : arr) {
-                    result.add(ele);
-                }
-            } else if (Float[].class == argClazz) {
-                Float[] arr = (Float[]) obj;
-                for (Float ele : arr) {
-                    result.add(ele);
-                }
-            }
-        } else if ((double[].class == argClazz) || (Double[].class == argClazz)) {
-            if (double[].class == argClazz) {
-                double[] arr = (double[]) obj;
-                for (double ele : arr) {
-                    result.add(ele);
-                }
-            } else if (Double[].class == argClazz) {
-                Double[] arr = (Double[]) obj;
-                for (Double ele : arr) {
-                    result.add(ele);
-                }
-            }
-        } else {
-            Object[] arr = (Object[]) obj;
-            for (Object ele : arr) {
-                result.add(ele);
-            }
+        for(Object ele : coll) {
+            JSON jsonEle = JSONParseUtils.fromBean(ele, config, JSONObject.class);
+            result.add(jsonEle);
         }
-
         return result;
     }
 
@@ -899,7 +797,7 @@ public class JSONArray implements JSON, List, RandomAccess {
      * @date 5/1/2017 2:07 AM
      * @since 1.0
      */
-    private void add(JSON ele) {
+    protected void add(JSON ele) {
         ele = JSONParseUtils.normalizeJSON(ele);
         eles.add(ele);
     }

@@ -4,8 +4,12 @@ import com.hx.json.JSONArray;
 import com.hx.json.JSONObject;
 import com.hx.log.util.Constants;
 import com.hx.log.util.Log;
+import com.hx.log.util.Tools;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.lang.annotation.Target;
+import java.util.List;
 
 import static com.hx.log.util.Log.info;
 
@@ -47,6 +51,18 @@ public class Test04ParseArray {
         JSONArray arr = new JSONArray();
 
         arr.add((JSONObject) null);
+        info(arr.toString());
+
+    }
+
+    @Test
+    public void parseArray02() {
+
+//        List<String> ls = Tools.asList("123", "34", "df");
+        List<Test01JSONTests.User> ls = Tools.asList(new Test01JSONTests.User("123", 11),
+                new Test01JSONTests.User("11", 12), new Test01JSONTests.User("22", 22));
+        JSONArray arr = JSONArray.fromObject(ls);
+
         info(arr.toString());
 
     }
