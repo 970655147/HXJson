@@ -17,7 +17,7 @@ class JSONDouble implements JSON {
      */
     private double val;
 
-    JSONDouble(double val) {
+    private JSONDouble(double val) {
         this.val = val;
     }
 
@@ -65,7 +65,7 @@ class JSONDouble implements JSON {
      * @date 4/15/2017 5:18 PM
      * @since 1.0
      */
-    static JSONDouble fromObject(double val) {
+    static JSON fromObject(double val) {
         return new JSONDouble(val);
     }
 

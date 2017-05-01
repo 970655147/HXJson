@@ -17,7 +17,7 @@ class JSONBool implements JSON {
      */
     private boolean val;
 
-    JSONBool(boolean val) {
+    private JSONBool(boolean val) {
         this.val = val;
     }
 
@@ -65,7 +65,7 @@ class JSONBool implements JSON {
      * @date 4/15/2017 5:18 PM
      * @since 1.0
      */
-    static JSONBool fromObject(boolean bool) {
+    static JSON fromObject(boolean bool) {
         return new JSONBool(bool);
     }
 

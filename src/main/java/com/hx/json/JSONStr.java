@@ -18,7 +18,7 @@ class JSONStr implements JSON {
      */
     private String str;
 
-    JSONStr(String str) {
+    private JSONStr(String str) {
         this.str = str;
     }
 
@@ -66,7 +66,11 @@ class JSONStr implements JSON {
      * @date 4/15/2017 5:18 PM
      * @since 1.0
      */
-    static JSONStr fromObject(Object obj) {
+    static JSON fromObject(Object obj) {
+        if((obj == null) || (obj == JSONNull.getInstance()) ) {
+            return JSONNull.getInstance();
+        }
+
         return new JSONStr(String.valueOf(obj));
     }
 

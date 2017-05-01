@@ -18,7 +18,7 @@ public class SimpleValueNodeParser implements JSONValueNodeParser {
 
     @Override
     public JSON parse(WordsSeprator sep, String key, JSONConfig config) {
-        Tools.assert0(sep.hasNext(), "expect an value for key : " + key);
+        Tools.assert0(sep.hasNext(), "expect an value for key : " + key + ", around : " + sep.rest());
         String next = sep.seek().trim();
         if (JSONConstants.OBJ_START.equals(next)) {
             return JSONObject.fromString(sep, config, false);
@@ -30,7 +30,7 @@ public class SimpleValueNodeParser implements JSONValueNodeParser {
             // take null check before 'l', "L"
         } else if (Tools.equalsIgnoreCase(JSONConstants.ELE_NULL, next)) {
             sep.next();
-            return JSONObj.JSON_OBJ_NULL;
+            return JSONNull.getInstance();
         } else if (Tools.equalsIgnoreCase(Tools.TRUE, next) || Tools.equalsIgnoreCase(Tools.FALSE, next)) {
             sep.next();
             return JSONBool.fromObject(Tools.equalsIgnoreCase(Tools.TRUE, next));
@@ -70,7 +70,7 @@ public class SimpleValueNodeParser implements JSONValueNodeParser {
             }
         }
 
-        Tools.assert0("bad format value for key : " + key);
+        Tools.assert0("bad format value for key : " + key + ", around : " + sep.rest());
         return null;
     }
 

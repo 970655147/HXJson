@@ -17,7 +17,7 @@ class JSONInt implements JSON {
      */
     private int val;
 
-    JSONInt(int val) {
+    private JSONInt(int val) {
         this.val = val;
     }
 
@@ -65,7 +65,7 @@ class JSONInt implements JSON {
      * @date 4/15/2017 5:18 PM
      * @since 1.0
      */
-    static JSONInt fromObject(int val) {
+    static JSON fromObject(int val) {
         return new JSONInt(val);
     }
 

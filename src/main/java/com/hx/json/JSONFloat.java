@@ -18,7 +18,7 @@ class JSONFloat implements JSON {
      */
     private float val;
 
-    JSONFloat(float val) {
+    private JSONFloat(float val) {
         this.val = val;
     }
 
@@ -66,7 +66,7 @@ class JSONFloat implements JSON {
      * @date 4/15/2017 5:18 PM
      * @since 1.0
      */
-    static JSONFloat fromObject(float val) {
+    static JSON fromObject(float val) {
         return new JSONFloat(val);
     }
 

@@ -2,33 +2,34 @@ package com.hx.json;
 
 import com.hx.json.interf.JSON;
 import com.hx.json.interf.JSONType;
+import com.hx.log.util.Tools;
 
 /**
- * JSONLong
+ * represent null
  *
  * @author Jerry.X.He <970655147@qq.com>
  * @version 1.0
- * @date 4/15/2017 6:06 PM
+ * @date 5/1/2017 1:04 AM
  */
-class JSONLong implements JSON {
+class JSONNull implements JSON {
 
     /**
-     * 当前JSON持有的val
+     * JSONObj(null)
      */
-    private long val;
+    public static final JSONNull INSTANCE = new JSONNull();
 
-    private JSONLong(long val) {
-        this.val = val;
+    private JSONNull() {
+
     }
 
     @Override
     public JSONType type() {
-        return JSONType.LONG;
+        return JSONType.NULL;
     }
 
     @Override
     public Object value() {
-        return Long.valueOf(val);
+        return null;
     }
 
     @Override
@@ -43,7 +44,7 @@ class JSONLong implements JSON {
 
     @Override
     public boolean isNull() {
-        return false;
+        return true;
     }
 
     @Override
@@ -53,20 +54,32 @@ class JSONLong implements JSON {
 
     @Override
     public String toString(int indentFactor) {
-        return String.valueOf(val);
+        return Tools.NULL;
     }
 
     /**
-     * 根据给定的值创建一个JSONLong
+     * 根据给定的Object创建一个JSONNull
      *
-     * @param val 给定的值
+     * @param obj 给定的Object
      * @return com.hx.log.json.JSONStr
      * @author Jerry.X.He
      * @date 4/15/2017 5:18 PM
      * @since 1.0
      */
-    static JSON fromObject(long val) {
-        return new JSONLong(val);
+    static JSONNull fromObject(Object obj) {
+        return getInstance();
+    }
+
+    /**
+     * 获取JSONNull的实例
+     *
+     * @return com.hx.json.JSONNull
+     * @author Jerry.X.He
+     * @date 5/1/2017 1:08 AM
+     * @since 1.0
+     */
+    public static JSONNull getInstance() {
+        return INSTANCE;
     }
 
 }

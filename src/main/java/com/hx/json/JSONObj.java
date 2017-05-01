@@ -13,16 +13,11 @@ import com.hx.json.interf.JSONType;
 class JSONObj implements JSON {
 
     /**
-     * JSONObj(null)
-     */
-    public static final JSONObj JSON_OBJ_NULL = JSONObj.fromObject(null);
-
-    /**
      * 当前JSON持有的Object
      */
     private Object obj;
 
-    JSONObj(Object obj) {
+    private JSONObj(Object obj) {
         this.obj = obj;
     }
 
@@ -70,7 +65,11 @@ class JSONObj implements JSON {
      * @date 4/15/2017 5:18 PM
      * @since 1.0
      */
-    static JSONObj fromObject(Object obj) {
+    static JSON fromObject(Object obj) {
+        if((obj == null) || (obj == JSONNull.getInstance()) ) {
+            return JSONNull.getInstance();
+        }
+
         return new JSONObj(obj);
     }
 

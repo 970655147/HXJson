@@ -8,6 +8,7 @@ import com.hx.json.util.JSONConstants;
 import com.hx.log.cache.mem.LFUMCache;
 import com.hx.log.interf.Cache;
 import com.hx.log.str.WordsSeprator;
+import com.hx.log.util.Constants;
 import com.hx.log.util.Tools;
 
 import java.lang.reflect.GenericArrayType;
@@ -42,7 +43,7 @@ public final class JSONParseUtils {
     /**
      * 缓存的Type -> Type类型 的映射
      */
-    private static Cache<Type, Integer> CACHED_TYPE_2_TYPE_IMPL = new LFUMCache<>(100);
+    private static Cache<Type, Integer> CACHED_TYPE_2_TYPE_IMPL = new LFUMCache<>(Constants.optInt("hxJson.cache.capacity"), false);
 
     // disable constructor
     private JSONParseUtils() {
@@ -148,6 +149,23 @@ public final class JSONParseUtils {
 
     public String toString(JSON json, int identFactor) {
         return (json == null) ? Tools.NULL : json.toString(identFactor);
+    }
+
+    /**
+     * 规则化给定的JSON, 如果其为null, 将其转换为JSONNull
+     *
+     * @param ele 给定的JSON
+     * @return com.hx.json.interf.JSON
+     * @author Jerry.X.He
+     * @date 5/1/2017 3:07 AM
+     * @since 1.0
+     */
+    public static JSON normalizeJSON(JSON ele) {
+        if((ele == null) || (ele.isNull()) ) {
+            ele = JSONNull.getInstance();
+        }
+
+        return ele;
     }
 
     /**
@@ -283,6 +301,8 @@ public final class JSONParseUtils {
                 toString((JSONArray) value.value(), sb);
             } else if ((JSONType.OBJ == value.type()) || (JSONType.STR == value.type())) {
                 appendForObjOrStr(value, sb, 0);
+            } else if(JSONType.NULL == value.type()) {
+                Tools.append(sb, value.toString(0));
             } else {
                 Tools.append(sb, value.toString(0));
             }
@@ -303,6 +323,8 @@ public final class JSONParseUtils {
                 toString((JSONArray) value.value(), sb);
             } else if ((JSONType.OBJ == value.type()) || (JSONType.STR == value.type())) {
                 appendForObjOrStr(value, sb, 0);
+            } else if(JSONType.NULL == value.type()) {
+                Tools.append(sb, value.toString(0));
             } else {
                 Tools.append(sb, value.toString(0));
             }
@@ -342,6 +364,8 @@ public final class JSONParseUtils {
                 toString((JSONArray) value.value(), indentFactor, depth + 1, sb);
             } else if ((JSONType.OBJ == value.type()) || (JSONType.STR == value.type())) {
                 appendForObjOrStr(value, sb, identCnt);
+            } else if(JSONType.NULL == value.type()) {
+                Tools.append(sb, value.toString(indentFactor));
             } else {
                 Tools.append(sb, value.toString(indentFactor));
             }
@@ -367,6 +391,8 @@ public final class JSONParseUtils {
             } else if ((JSONType.OBJ == value.type()) || (JSONType.STR == value.type())) {
                 appendBackspace(sb, identCnt);
                 appendForObjOrStr(value, sb, identCnt);
+            } else if(JSONType.NULL == value.type()) {
+                Tools.append(sb, value.toString(indentFactor));
             } else {
                 appendBackspace(sb, identCnt);
                 Tools.append(sb, value.toString(indentFactor));
@@ -413,12 +439,7 @@ public final class JSONParseUtils {
      * @since 1.0
      */
     private static void appendForObjOrStr(JSON value, StringBuilder sb, int indentFactor) {
-        // for null, output null directly
-        if (JSONType.OBJ == value.type() && (JSONObj.JSON_OBJ_NULL == value)) {
-            Tools.append(sb, value.toString(0));
-        } else {
-            Tools.append(sb, JSONConstants.STR_SEP02 + value.toString(indentFactor) + JSONConstants.STR_SEP02);
-        }
+        Tools.append(sb, JSONConstants.STR_SEP02 + value.toString(indentFactor) + JSONConstants.STR_SEP02);
     }
 
     /**

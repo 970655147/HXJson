@@ -10,26 +10,6 @@ package com.hx.json.interf;
 public enum JSONType {
 
     /**
-     * JSONObject
-     */
-    OBJECT,
-
-    /**
-     * JSONArray
-     */
-    ARRAY,
-
-    /**
-     * JSONStr
-     */
-    STR,
-
-    /**
-     * JSONObj
-     */
-    OBJ,
-
-    /**
      * JSONBool
      */
     BOOL,
@@ -52,8 +32,28 @@ public enum JSONType {
     /**
      * JSONDouble
      */
-    DOUBLE
+    DOUBLE,
+    /**
+     * JSONStr
+     */
+    STR,
+    /**
+     * JSONObj
+     */
+    OBJ,
+    /**
+     * JSONNull
+     */
+    NULL,
+    /**
+     * JSONObject
+     */
+    OBJECT,
 
+    /**
+     * JSONArray
+     */
+    ARRAY
     ;
 
 }
