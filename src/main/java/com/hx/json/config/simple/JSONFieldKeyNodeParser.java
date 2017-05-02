@@ -1,12 +1,11 @@
 package com.hx.json.config.simple;
 
+import com.hx.common.util.InnerTools;
 import com.hx.json.JSONParseUtils;
 import com.hx.json.config.interf.JSONConfig;
 import com.hx.json.interf.JSONField;
 import com.hx.json.config.interf.JSONKeyNodeParser;
-import com.hx.log.util.Constants;
-import com.hx.log.util.Tools;
-
+import com.hx.json.util.JSONConstants;
 import java.lang.reflect.Field;
 
 /**
@@ -20,16 +19,16 @@ public class JSONFieldKeyNodeParser implements JSONKeyNodeParser {
 
     @Override
     public String getKeyForGetter(Class clazz, String getterMethodName, JSONConfig config) {
-        String fieldName = JSONParseUtils.trimIfStartsWith(getterMethodName, Constants.BEAN_GETTER_PREFIXES);
-        fieldName = Tools.lowerCaseFirstChar(fieldName);
+        String fieldName = JSONParseUtils.trimIfStartsWith(getterMethodName, JSONConstants.BEAN_GETTER_PREFIXES);
+        fieldName = InnerTools.lowerCaseFirstChar(fieldName);
 
         return getKeyForField(clazz, fieldName, config);
     }
 
     @Override
     public String getKeyForSetter(Class clazz, String setterMethodName, JSONConfig config) {
-        String fieldName = JSONParseUtils.trimIfStartsWith(setterMethodName, Constants.BEAN_SETTER_PREFIXES);
-        fieldName = Tools.lowerCaseFirstChar(fieldName);
+        String fieldName = JSONParseUtils.trimIfStartsWith(setterMethodName, JSONConstants.BEAN_SETTER_PREFIXES);
+        fieldName = InnerTools.lowerCaseFirstChar(fieldName);
 
         return getKeyForField(clazz, fieldName, config);
     }

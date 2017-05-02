@@ -1,12 +1,12 @@
 package com.hx.json;
 
+import com.hx.common.str.WordsSeprator;
+import com.hx.common.util.InnerTools;
 import com.hx.json.config.simple.SimpleJSONConfig;
 import com.hx.json.interf.JSON;
 import com.hx.json.config.interf.JSONConfig;
 import com.hx.json.interf.JSONType;
 import com.hx.json.util.JSONConstants;
-import com.hx.log.str.WordsSeprator;
-import com.hx.log.util.Tools;
 
 import java.util.*;
 
@@ -215,7 +215,7 @@ public class JSONArray implements JSON, List, RandomAccess {
     public Object get(int idx) {
         JSON val = eles.get(idx);
         if (val == null) {
-            Tools.assert0("the element of [" + idx + "] do not exists !");
+            InnerTools.assert0("the element of [" + idx + "] do not exists !");
         }
 
         return val.value();
@@ -224,7 +224,7 @@ public class JSONArray implements JSON, List, RandomAccess {
     public JSONObject getJSONObject(int idx) {
         JSON val = eles.get(idx);
         if (val == null || ((JSONType.NULL != val.type()) && (JSONType.OBJECT != val.type()))) {
-            Tools.assert0("the element of [" + idx + "] do not exists or it does not an JSONObject !");
+            InnerTools.assert0("the element of [" + idx + "] do not exists or it does not an JSONObject !");
         }
 
         return (JSONObject) val.value();
@@ -233,7 +233,7 @@ public class JSONArray implements JSON, List, RandomAccess {
     public JSONArray getJSONArray(int idx) {
         JSON val = eles.get(idx);
         if (val == null || ((JSONType.NULL != val.type()) && (JSONType.ARRAY != val.type()))) {
-            Tools.assert0("the element of [" + idx + "] do not exists or it does not an JSONArray !");
+            InnerTools.assert0("the element of [" + idx + "] do not exists or it does not an JSONArray !");
         }
 
         return (JSONArray) val.value();
@@ -243,7 +243,7 @@ public class JSONArray implements JSON, List, RandomAccess {
     public String getString(int idx) {
         JSON val = eles.get(idx);
         if (val == null) {
-            Tools.assert0("the element of [" + idx + "] do not exists !");
+            InnerTools.assert0("the element of [" + idx + "] do not exists !");
         }
 
         return String.valueOf(val.value());
@@ -252,7 +252,7 @@ public class JSONArray implements JSON, List, RandomAccess {
     public boolean getBoolean(int idx) {
         JSON val = eles.get(idx);
         if (val == null || (JSONType.BOOL != val.type())) {
-            Tools.assert0("the element of [" + idx + "] do not exists or it does not an boolean !");
+            InnerTools.assert0("the element of [" + idx + "] do not exists or it does not an boolean !");
         }
 
         return (Boolean) val.value();
@@ -261,7 +261,7 @@ public class JSONArray implements JSON, List, RandomAccess {
     public int getInt(int idx) {
         JSON val = eles.get(idx);
         if (val == null || (JSONType.INT != val.type())) {
-            Tools.assert0("the element of [" + idx + "] do not exists or it does not an int !");
+            InnerTools.assert0("the element of [" + idx + "] do not exists or it does not an int !");
         }
 
         return (Integer) val.value();
@@ -270,7 +270,7 @@ public class JSONArray implements JSON, List, RandomAccess {
     public long getLong(int idx) {
         JSON val = eles.get(idx);
         if (val == null || (JSONType.LONG != val.type())) {
-            Tools.assert0("the element of [" + idx + "] do not exists or it does not an long !");
+            InnerTools.assert0("the element of [" + idx + "] do not exists or it does not an long !");
         }
 
         return (Long) val.value();
@@ -279,7 +279,7 @@ public class JSONArray implements JSON, List, RandomAccess {
     public float getFloat(int idx) {
         JSON val = eles.get(idx);
         if (val == null || (JSONType.FLOAT != val.type())) {
-            Tools.assert0("the element of [" + idx + "] do not exists or it does not an float !");
+            InnerTools.assert0("the element of [" + idx + "] do not exists or it does not an float !");
         }
 
         return (Float) val.value();
@@ -288,7 +288,7 @@ public class JSONArray implements JSON, List, RandomAccess {
     public double getDouble(int idx) {
         JSON val = eles.get(idx);
         if (val == null || (JSONType.DOUBLE != val.type())) {
-            Tools.assert0("the element of [" + idx + "] do not exists or it does not an double !");
+            InnerTools.assert0("the element of [" + idx + "] do not exists or it does not an double !");
         }
 
         return (Double) val.value();
@@ -690,7 +690,7 @@ public class JSONArray implements JSON, List, RandomAccess {
         if(sep == null) {
             return NULL_JSON_ARRAY;
         }
-        Tools.assert0(JSONConstants.ARR_START.equals(sep.next()), "expect a : " + JSONConstants.ARR_START + " ! around : " + sep.currentAndRest());
+        InnerTools.assert0(JSONConstants.ARR_START.equals(sep.next()), "expect a : " + JSONConstants.ARR_START + " ! around : " + sep.currentAndRest());
         JSONArray result = new JSONArray();
 
         int idx = 0;
@@ -702,7 +702,7 @@ public class JSONArray implements JSON, List, RandomAccess {
                 if (JSONConstants.ARR_END.equals(sep.seek())) {
                     break;
                 }
-                Tools.assert0(JSONConstants.ELE_SEP.equals(sep.next()), "expect a : " + JSONConstants.ELE_SEP + " ! around : " + sep.currentAndRest());
+                InnerTools.assert0(JSONConstants.ELE_SEP.equals(sep.next()), "expect a : " + JSONConstants.ELE_SEP + " ! around : " + sep.currentAndRest());
                 idx++;
             }
         }
@@ -710,7 +710,7 @@ public class JSONArray implements JSON, List, RandomAccess {
         // skip ']'
         sep.next();
         if (checkEnd) {
-            Tools.assert0(Tools.isEmpty(sep.next()), "expect nothing after ']' !");
+            InnerTools.assert0(InnerTools.isEmpty(sep.next()), "expect nothing after ']' !");
         }
         return result;
     }

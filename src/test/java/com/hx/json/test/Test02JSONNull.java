@@ -1,15 +1,10 @@
 package com.hx.json.test;
 
+import com.hx.common.util.InnerTools;
 import com.hx.json.JSONArray;
 import com.hx.json.JSONObject;
-import com.hx.json.JSONParseUtils;
-import com.hx.log.util.Log;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.List;
-
-import static com.hx.log.util.Log.info;
 
 /**
  * Test02JSONNull
@@ -23,8 +18,6 @@ public class Test02JSONNull {
     @Before
     public void before() {
 
-        Log.infoFatalLogger.logPatternChain = null;
-
     }
 
     @Test
@@ -35,12 +28,12 @@ public class Test02JSONNull {
 //        JSONParseUtils.setValueNodeParser(null);
         JSONObject obj = JSONObject.fromObject(objStr);
 
-        info(obj.toString() );
-        info(obj.toString(5) );
+        InnerTools.log(obj.toString() );
+        InnerTools.log(obj.toString(5) );
 
         String arrStr = "[null, 'null', 124d]";
         JSONArray arr = JSONArray.fromObject(arrStr);
-        info(arr.toString() );
+        InnerTools.log(arr.toString() );
 
     }
 
@@ -49,11 +42,11 @@ public class Test02JSONNull {
 
         String objStr = "{ }";
         JSONObject obj = JSONObject.fromObject(objStr);
-        info(obj.toString() );
+        InnerTools.log(obj.toString() );
 
         String arrStr = "[ ]";
         JSONArray arr = JSONArray.fromObject(arrStr);
-        info(arr.toString() );
+        InnerTools.log(arr.toString() );
 
     }
 

@@ -1,7 +1,7 @@
 package com.hx.json.config.interf;
 
+import com.hx.common.str.WordsSeprator;
 import com.hx.json.interf.JSON;
-import com.hx.log.str.WordsSeprator;
 
 /**
  * JSONValueNodeParser : 解析一个JSON节点的值, JSONObject中的value, 或者JSONArray中的value

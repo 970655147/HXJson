@@ -1,6 +1,6 @@
 package com.hx.json.util;
 
-import com.hx.log.util.Tools;
+import com.hx.common.util.InnerTools;
 
 import java.util.Map;
 import java.util.Set;
@@ -16,7 +16,7 @@ public final class JSONConstants {
 
     // disable constructor
     private JSONConstants() {
-        Tools.assert0("can't instantiate !");
+        InnerTools.assert0("can't instantiate !");
     }
 
     /**
@@ -39,16 +39,22 @@ public final class JSONConstants {
     /**
      * 几种基本类型的后缀, long, float, double
      */
-    public static final Set<String> ELE_LONG_SUFFIXES = Tools.asSet("l", "L" );
-    public static final Set<String> ELE_FLOAT_SUFFIXES = Tools.asSet("f", "F" );
-    public static final Set<String> ELE_DOUBLE_SUFFIXES = Tools.asSet("d", "D" );
+    public static final Set<String> ELE_LONG_SUFFIXES = InnerTools.asSet("l", "L" );
+    public static final Set<String> ELE_FLOAT_SUFFIXES = InnerTools.asSet("f", "F" );
+    public static final Set<String> ELE_DOUBLE_SUFFIXES = InnerTools.asSet("d", "D" );
+
+    /**
+     * bean中的setter, getter前缀
+     */
+    public static final Set<String> BEAN_SETTER_PREFIXES = InnerTools.asSet("set", "is", "has");
+    public static final Set<String> BEAN_GETTER_PREFIXES = InnerTools.asSet("get", "is", "has");
 
     /**
      * 解析字符串的时候需要处理的分隔符
      */
-    public static final Set<String> JSON_SEPS = Tools.asSet(OBJ_START, OBJ_END, ARR_START, ARR_END, KV_SEP, ELE_SEP);
-    public static final Map<String, String> NEED_TO_ESCAPE = Tools.asMap(new String[]{STR_SEP01, STR_SEP02 }, STR_SEP01, STR_SEP02);
-    public static final Set<String> KEY_SEPS = Tools.asSet(STR_SEP01, STR_SEP02);
+    public static final Set<String> JSON_SEPS = InnerTools.asSet(OBJ_START, OBJ_END, ARR_START, ARR_END, KV_SEP, ELE_SEP);
+    public static final Map<String, String> NEED_TO_ESCAPE = InnerTools.asMap(new String[]{STR_SEP01, STR_SEP02 }, STR_SEP01, STR_SEP02);
+    public static final Set<String> KEY_SEPS = InnerTools.asSet(STR_SEP01, STR_SEP02);
 
     /**
      * toString的时候需要的常亮

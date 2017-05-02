@@ -1,17 +1,13 @@
 package com.hx.json.test;
 
+import com.hx.common.util.InnerTools;
 import com.hx.json.JSONArray;
 import com.hx.json.JSONObject;
-import com.hx.log.util.Constants;
-import com.hx.log.util.Log;
-import com.hx.log.util.Tools;
+import com.hx.json.util.JSONConstants;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.lang.annotation.Target;
 import java.util.List;
-
-import static com.hx.log.util.Log.info;
 
 /**
  * Test04ParseArray
@@ -24,7 +20,7 @@ public class Test04ParseArray {
 
     @Before
     public void before() {
-        Log.infoFatalLogger.logPatternChain = null;
+
     }
 
     @Test
@@ -35,13 +31,13 @@ public class Test04ParseArray {
                 "            ]}";
 
         JSONObject obj = JSONObject.fromObject(objStr);
-        info(obj.toString() );
+        InnerTools.log(obj.toString() );
     }
 
     @Test
     public void castNull() {
 
-        info((Object) null);
+        InnerTools.log((Object) null);
 
     }
 
@@ -51,7 +47,7 @@ public class Test04ParseArray {
         JSONArray arr = new JSONArray();
 
         arr.add((JSONObject) null);
-        info(arr.toString());
+        InnerTools.log(arr.toString());
 
     }
 
@@ -59,18 +55,18 @@ public class Test04ParseArray {
     public void parseArray02() {
 
 //        List<String> ls = Tools.asList("123", "34", "df");
-        List<Test01JSONTests.User> ls = Tools.asList(new Test01JSONTests.User("123", 11),
+        List<Test01JSONTests.User> ls = InnerTools.asList(new Test01JSONTests.User("123", 11),
                 new Test01JSONTests.User("11", 12), new Test01JSONTests.User("22", 22));
         JSONArray arr = JSONArray.fromObject(ls);
 
-        info(arr.toString());
+        InnerTools.log(arr.toString());
 
     }
 
     @Test
     public void printOBJ_ALREADY_EXISTS() {
 
-        info(Constants.OBJECT_ALREADY_EXISTS);
+        InnerTools.log(JSONConstants.BEAN_SETTER_PREFIXES);
 
     }
 

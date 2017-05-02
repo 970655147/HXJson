@@ -17,7 +17,7 @@
     <dependencies>
         <dependency>
             <groupId>com.hx</groupId>
-            <artifactId>HXLog</artifactId>
+            <artifactId>HXCommon</artifactId>
             <version>${HXLog.version}</version>
         </dependency>
 

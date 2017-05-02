@@ -1,5 +1,7 @@
 package com.hx.json;
 
+import com.hx.common.str.WordsSeprator;
+import com.hx.common.util.InnerTools;
 import com.hx.json.config.interf.JSONConfig;
 import com.hx.json.config.interf.JSONKeyNodeParser;
 import com.hx.json.config.interf.JSONValueNodeParser;
@@ -7,11 +9,6 @@ import com.hx.json.config.simple.SimpleKeyNodeParser;
 import com.hx.json.config.simple.SimpleValueNodeParser;
 import com.hx.json.interf.*;
 import com.hx.json.util.JSONConstants;
-import com.hx.log.cache.mem.LFUMCache;
-import com.hx.log.interf.Cache;
-import com.hx.log.str.WordsSeprator;
-import com.hx.log.util.Constants;
-import com.hx.log.util.Tools;
 
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Modifier;
@@ -49,11 +46,11 @@ public final class JSONParseUtils {
     /**
      * 缓存的Type -> Type类型 的映射
      */
-    private static Cache<Type, Integer> CACHED_TYPE_2_TYPE_IMPL = new LFUMCache<>(Constants.optInt("hxJson.cache.capacity"), false);
+    private static Map<Type, Integer> CACHED_TYPE_2_TYPE_IMPL = new HashMap<>();
 
     // disable constructor
     private JSONParseUtils() {
-        Tools.assert0("can't instantiate !");
+        InnerTools.assert0("can't instantiate !");
     }
 
     /**
@@ -74,7 +71,7 @@ public final class JSONParseUtils {
             } else if (json.startsWith(JSONConstants.ARR_START)) {
                 return JSONArray.fromObject(json, config);
             } else {
-                Tools.assert0("illegal format obj : " + json);
+                InnerTools.assert0("illegal format obj : " + json);
             }
         }
 
@@ -183,7 +180,7 @@ public final class JSONParseUtils {
             }
         }
 
-        Tools.assert0("the type of 'obj' does not compatiable with 'argClazz' !");
+        InnerTools.assert0("the type of 'obj' does not compatiable with 'argClazz' !");
         return null;
     }
 
@@ -201,7 +198,7 @@ public final class JSONParseUtils {
     }
 
     public String toString(JSON json, int identFactor) {
-        return (json == null) ? Tools.NULL : json.toString(identFactor);
+        return (json == null) ? InnerTools.NULL : json.toString(identFactor);
     }
 
     /**
@@ -303,7 +300,7 @@ public final class JSONParseUtils {
                 return keyWithSep.substring(sep.length(), keyWithSep.length() - sep.length());
             }
         }
-        Tools.assert0("key must startsWith : " + seps.toString());
+        InnerTools.assert0("key must startsWith : " + seps.toString());
         return keyWithSep;
     }
 
@@ -339,7 +336,7 @@ public final class JSONParseUtils {
      * @since 1.0
      */
     static String getKeyForGetter(Class clazz, String getterMethodName, JSONConfig config) {
-        Tools.assert0(KEY_NODE_PARSER != null, "'KEY_NODE_PARSER' can't be null !");
+        InnerTools.assert0(KEY_NODE_PARSER != null, "'KEY_NODE_PARSER' can't be null !");
         return KEY_NODE_PARSER.getKeyForGetter(clazz, getterMethodName, config);
     }
 
@@ -355,7 +352,7 @@ public final class JSONParseUtils {
      * @since 1.0
      */
     static String getKeyForSetter(Class clazz, String setterMethodName, JSONConfig config) {
-        Tools.assert0(KEY_NODE_PARSER != null, "'KEY_NODE_PARSER' can't be null !");
+        InnerTools.assert0(KEY_NODE_PARSER != null, "'KEY_NODE_PARSER' can't be null !");
         return KEY_NODE_PARSER.getKeyForSetter(clazz, setterMethodName, config);
     }
 
@@ -371,7 +368,7 @@ public final class JSONParseUtils {
      * @since 1.0
      */
     static JSON getNextValue(WordsSeprator sep, String key, JSONConfig config) {
-        Tools.assert0(VALUE_NODE_PARSER != null, "'VALUE_NODE_PARSER' can't be null !");
+        InnerTools.assert0(VALUE_NODE_PARSER != null, "'VALUE_NODE_PARSER' can't be null !");
         return VALUE_NODE_PARSER.parse(sep, key, config);
     }
 
@@ -386,33 +383,33 @@ public final class JSONParseUtils {
      * @since 1.0
      */
     static void toString(JSONObject obj, StringBuilder sb) {
-        Tools.append(sb, JSONConstants.OBJ_START);
+        sb.append(JSONConstants.OBJ_START);
 
         for (Map.Entry<String, JSON> entry : obj.eles.entrySet()) {
             JSON value = entry.getValue();
-            Tools.append(sb, JSONConstants.STR_SEP02 + entry.getKey() + JSONConstants.STR_SEP02 + JSONConstants.KV_SEP);
+            sb.append(JSONConstants.STR_SEP02 + entry.getKey() + JSONConstants.STR_SEP02 + JSONConstants.KV_SEP);
             if (JSONType.OBJECT == value.type()) {
-                Tools.append(sb, Tools.EMPTY_STR);
+                sb.append(InnerTools.EMPTY_STR);
                 toString((JSONObject) value.value(), sb);
             } else if (JSONType.ARRAY == value.type()) {
-                Tools.append(sb, Tools.EMPTY_STR);
+                sb.append(InnerTools.EMPTY_STR);
                 toString((JSONArray) value.value(), sb);
             } else if ((JSONType.OBJ == value.type()) || (JSONType.STR == value.type())) {
                 appendForObjOrStr(value, sb, 0);
             } else if (JSONType.NULL == value.type()) {
-                Tools.append(sb, value.toString(0));
+                sb.append(value.toString(0));
             } else {
-                Tools.append(sb, value.toString(0));
+                sb.append(value.toString(0));
             }
-            Tools.append(sb, JSONConstants.TO_STRING_ELE_SEP);
+            sb.append(JSONConstants.TO_STRING_ELE_SEP);
         }
 
-        Tools.removeLastSep(sb, JSONConstants.TO_STRING_ELE_SEP);
-        Tools.append(sb, JSONConstants.OBJ_END);
+        InnerTools.removeLastSep(sb, JSONConstants.TO_STRING_ELE_SEP);
+        sb.append(JSONConstants.OBJ_END);
     }
 
     static void toString(JSONArray obj, StringBuilder sb) {
-        Tools.append(sb, JSONConstants.ARR_START);
+        sb.append(JSONConstants.ARR_START);
 
         for (JSON value : obj.eles) {
             if (JSONType.OBJECT == value.type()) {
@@ -422,15 +419,15 @@ public final class JSONParseUtils {
             } else if ((JSONType.OBJ == value.type()) || (JSONType.STR == value.type())) {
                 appendForObjOrStr(value, sb, 0);
             } else if (JSONType.NULL == value.type()) {
-                Tools.append(sb, value.toString(0));
+                sb.append(value.toString(0));
             } else {
-                Tools.append(sb, value.toString(0));
+                sb.append(value.toString(0));
             }
-            Tools.append(sb, JSONConstants.TO_STRING_ELE_SEP);
+            sb.append(JSONConstants.TO_STRING_ELE_SEP);
         }
 
-        Tools.removeLastSep(sb, JSONConstants.TO_STRING_ELE_SEP);
-        Tools.append(sb, JSONConstants.ARR_END);
+        InnerTools.removeLastSep(sb, JSONConstants.TO_STRING_ELE_SEP);
+        sb.append(JSONConstants.ARR_END);
     }
 
     /**
@@ -447,39 +444,39 @@ public final class JSONParseUtils {
     static void toString(JSONObject obj, int indentFactor, int depth, StringBuilder sb) {
         int identCnt = indentFactor * depth;
         appendBackspace(sb, identCnt - indentFactor);
-        Tools.appendCRLF(sb, JSONConstants.OBJ_START);
+        sb.append(JSONConstants.OBJ_START + InnerTools.CRLF);
 
         for (Map.Entry<String, JSON> entry : obj.eles.entrySet()) {
             JSON value = entry.getValue();
             appendBackspace(sb, identCnt);
-            Tools.append(sb, JSONConstants.STR_SEP02 + entry.getKey() + JSONConstants.STR_SEP02 +
+            sb.append(JSONConstants.STR_SEP02 + entry.getKey() + JSONConstants.STR_SEP02 +
                     JSONConstants.ONE_BACKSPACE + JSONConstants.KV_SEP + JSONConstants.ONE_BACKSPACE);
             if (JSONType.OBJECT == value.type()) {
-                Tools.appendCRLF(sb, Tools.EMPTY_STR);
+                sb.append(InnerTools.CRLF);
                 toString((JSONObject) value.value(), indentFactor, depth + 1, sb);
             } else if (JSONType.ARRAY == value.type()) {
-                Tools.appendCRLF(sb, Tools.EMPTY_STR);
+                sb.append(InnerTools.CRLF);
                 toString((JSONArray) value.value(), indentFactor, depth + 1, sb);
             } else if ((JSONType.OBJ == value.type()) || (JSONType.STR == value.type())) {
                 appendForObjOrStr(value, sb, identCnt);
             } else if (JSONType.NULL == value.type()) {
-                Tools.append(sb, value.toString(indentFactor));
+                sb.append(value.toString(indentFactor));
             } else {
-                Tools.append(sb, value.toString(indentFactor));
+                sb.append(value.toString(indentFactor));
             }
-            Tools.appendCRLF(sb, JSONConstants.TO_STRING_ELE_SEP);
+            sb.append(JSONConstants.TO_STRING_ELE_SEP + InnerTools.CRLF);
         }
 
-        Tools.removeLastSep(sb, JSONConstants.TO_STRING_ELE_SEP + Tools.CRLF);
-        Tools.appendCRLF(sb, Tools.EMPTY_STR);
+        InnerTools.removeLastSep(sb, JSONConstants.TO_STRING_ELE_SEP + InnerTools.CRLF);
+        sb.append(InnerTools.CRLF);
         appendBackspace(sb, identCnt - indentFactor);
-        Tools.append(sb, JSONConstants.OBJ_END);
+        sb.append(JSONConstants.OBJ_END);
     }
 
     static void toString(JSONArray obj, int indentFactor, int depth, StringBuilder sb) {
         int identCnt = indentFactor * depth;
         appendBackspace(sb, identCnt - indentFactor);
-        Tools.appendCRLF(sb, JSONConstants.ARR_START);
+        sb.append(JSONConstants.ARR_START + InnerTools.CRLF);
 
         for (JSON value : obj.eles) {
             if (JSONType.OBJECT == value.type()) {
@@ -490,18 +487,18 @@ public final class JSONParseUtils {
                 appendBackspace(sb, identCnt);
                 appendForObjOrStr(value, sb, identCnt);
             } else if (JSONType.NULL == value.type()) {
-                Tools.append(sb, value.toString(indentFactor));
+                sb.append(value.toString(indentFactor));
             } else {
                 appendBackspace(sb, identCnt);
-                Tools.append(sb, value.toString(indentFactor));
+                sb.append(value.toString(indentFactor));
             }
-            Tools.appendCRLF(sb, JSONConstants.TO_STRING_ELE_SEP);
+            sb.append(JSONConstants.TO_STRING_ELE_SEP + InnerTools.CRLF);
         }
 
-        Tools.removeLastSep(sb, JSONConstants.TO_STRING_ELE_SEP + Tools.CRLF);
-        Tools.appendCRLF(sb, Tools.EMPTY_STR);
+        InnerTools.removeLastSep(sb, JSONConstants.TO_STRING_ELE_SEP + InnerTools.CRLF);
+        sb.append(InnerTools.CRLF);
         appendBackspace(sb, identCnt - indentFactor);
-        Tools.append(sb, JSONConstants.ARR_END);
+        sb.append(JSONConstants.ARR_END);
     }
 
     /**
@@ -537,7 +534,7 @@ public final class JSONParseUtils {
      * @since 1.0
      */
     private static void appendForObjOrStr(JSON value, StringBuilder sb, int indentFactor) {
-        Tools.append(sb, JSONConstants.STR_SEP02 + value.toString(indentFactor) + JSONConstants.STR_SEP02);
+        sb.append(JSONConstants.STR_SEP02 + value.toString(indentFactor) + JSONConstants.STR_SEP02);
     }
 
     /**
@@ -787,14 +784,14 @@ public final class JSONParseUtils {
                 boolean[] attr = new boolean[attrColl.size()];
                 int idx = 0;
                 for (Object ele : attrColl) {
-                    attr[idx++] = Tools.equalsIgnoreCase(Tools.TRUE, String.valueOf(ele));
+                    attr[idx++] = InnerTools.equalsIgnoreCase(InnerTools.TRUE, String.valueOf(ele));
                 }
                 return attr;
             } else if (Boolean[].class == argClazz) {
                 Boolean[] attr = new Boolean[attrColl.size()];
                 int idx = 0;
                 for (Object ele : attrColl) {
-                    attr[idx++] = Tools.equalsIgnoreCase(Tools.TRUE, String.valueOf(ele));
+                    attr[idx++] = InnerTools.equalsIgnoreCase(InnerTools.TRUE, String.valueOf(ele));
                 }
                 return attr;
             }

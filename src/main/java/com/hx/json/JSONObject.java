@@ -1,20 +1,17 @@
 package com.hx.json;
 
+import com.hx.common.str.WordsSeprator;
+import com.hx.common.util.InnerTools;
 import com.hx.json.config.simple.SimpleJSONConfig;
 import com.hx.json.interf.JSON;
 import com.hx.json.config.interf.JSONConfig;
 import com.hx.json.interf.JSONType;
 import com.hx.json.util.JSONConstants;
-import com.hx.log.str.WordsSeprator;
-import com.hx.log.util.Constants;
-import com.hx.log.util.Tools;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.*;
-
-import static com.hx.log.util.Log.info;
 
 /**
  * JSONObject
@@ -362,7 +359,7 @@ public class JSONObject implements JSON, Map {
     public Object get(String key) {
         JSON val = eles.get(key);
         if (val == null) {
-            Tools.assert0("the key : " + key + " do not exists !");
+            InnerTools.assert0("the key : " + key + " do not exists !");
         }
 
         return val.value();
@@ -371,7 +368,7 @@ public class JSONObject implements JSON, Map {
     public JSONObject getJSONObject(String key) {
         JSON val = eles.get(key);
         if (val == null || ((JSONType.NULL != val.type()) && (JSONType.OBJECT != val.type()))) {
-            Tools.assert0("the key : " + key + " do not exists or it does not an JSONObject !");
+            InnerTools.assert0("the key : " + key + " do not exists or it does not an JSONObject !");
         }
 
         return (JSONObject) val.value();
@@ -380,7 +377,7 @@ public class JSONObject implements JSON, Map {
     public JSONArray getJSONArray(String key) {
         JSON val = eles.get(key);
         if (val == null || ((JSONType.NULL != val.type()) && (JSONType.ARRAY != val.type()))) {
-            Tools.assert0("the key : " + key + " do not exists or it does not an JSONArray !");
+            InnerTools.assert0("the key : " + key + " do not exists or it does not an JSONArray !");
         }
 
         return (JSONArray) val.value();
@@ -389,7 +386,7 @@ public class JSONObject implements JSON, Map {
     public String getString(String key) {
         JSON val = eles.get(key);
         if (val == null) {
-            Tools.assert0("the key : " + key + " do not exists !");
+            InnerTools.assert0("the key : " + key + " do not exists !");
         }
 
         return String.valueOf(val.value());
@@ -398,7 +395,7 @@ public class JSONObject implements JSON, Map {
     public boolean getBoolean(String key) {
         JSON val = eles.get(key);
         if (val == null || (JSONType.BOOL != val.type())) {
-            Tools.assert0("the key : " + key + " do not exists or it does not an boolean !");
+            InnerTools.assert0("the key : " + key + " do not exists or it does not an boolean !");
         }
 
         return (Boolean) val.value();
@@ -407,7 +404,7 @@ public class JSONObject implements JSON, Map {
     public int getInt(String key) {
         JSON val = eles.get(key);
         if (val == null || (JSONType.INT != val.type())) {
-            Tools.assert0("the key : " + key + " do not exists or it does not an int !");
+            InnerTools.assert0("the key : " + key + " do not exists or it does not an int !");
         }
 
         return (Integer) val.value();
@@ -416,7 +413,7 @@ public class JSONObject implements JSON, Map {
     public long getLong(String key) {
         JSON val = eles.get(key);
         if (val == null || (JSONType.LONG != val.type())) {
-            Tools.assert0("the key : " + key + " do not exists or it does not an long !");
+            InnerTools.assert0("the key : " + key + " do not exists or it does not an long !");
         }
 
         return (Long) val.value();
@@ -425,7 +422,7 @@ public class JSONObject implements JSON, Map {
     public float getFloat(String key) {
         JSON val = eles.get(key);
         if (val == null || (JSONType.FLOAT != val.type())) {
-            Tools.assert0("the key : " + key + " do not exists or it does not an float !");
+            InnerTools.assert0("the key : " + key + " do not exists or it does not an float !");
         }
 
         return (Float) val.value();
@@ -434,7 +431,7 @@ public class JSONObject implements JSON, Map {
     public double getDouble(String key) {
         JSON val = eles.get(key);
         if (val == null || (JSONType.DOUBLE != val.type())) {
-            Tools.assert0("the key : " + key + " do not exists or it does not an double !");
+            InnerTools.assert0("the key : " + key + " do not exists or it does not an double !");
         }
 
         return (Double) val.value();
@@ -735,19 +732,19 @@ public class JSONObject implements JSON, Map {
         if(sep == null) {
             return NULL_JSON_OBJECT;
         }
-        Tools.assert0(JSONConstants.OBJ_START.equals(sep.next()), "expect a : " + JSONConstants.OBJ_START + " ! around : " + sep.currentAndRest());
+        InnerTools.assert0(JSONConstants.OBJ_START.equals(sep.next()), "expect a : " + JSONConstants.OBJ_START + " ! around : " + sep.currentAndRest());
         JSONObject result = new JSONObject();
 
         if (!JSONConstants.OBJ_END.equals(sep.seek())) {
             while (sep.hasNext()) {
                 String nextKey = sep.next().trim();
-                Tools.assert0(
+                InnerTools.assert0(
                         (nextKey.startsWith(JSONConstants.STR_SEP01) && nextKey.endsWith(JSONConstants.STR_SEP01))
                                 ||
                                 (nextKey.startsWith(JSONConstants.STR_SEP02) && nextKey.endsWith(JSONConstants.STR_SEP02)),
                         "bad key format around : " + sep.currentAndRest()
                 );
-                Tools.assert0(JSONConstants.KV_SEP.equals(sep.next()), "expect a : " + JSONConstants.KV_SEP + " ! around : " + sep.currentAndRest());
+                InnerTools.assert0(JSONConstants.KV_SEP.equals(sep.next()), "expect a : " + JSONConstants.KV_SEP + " ! around : " + sep.currentAndRest());
                 nextKey = JSONParseUtils.trimForSurroundSep(nextKey, JSONConstants.KEY_SEPS);
                 JSON nextValue = JSONParseUtils.getNextValue(sep, nextKey, config);
                 result.eles.put(nextKey, nextValue);
@@ -755,14 +752,14 @@ public class JSONObject implements JSON, Map {
                 if (JSONConstants.OBJ_END.equals(sep.seek())) {
                     break;
                 }
-                Tools.assert0(JSONConstants.ELE_SEP.equals(sep.next()), "expect a : " + JSONConstants.ELE_SEP + " ! around : " + sep.currentAndRest());
+                InnerTools.assert0(JSONConstants.ELE_SEP.equals(sep.next()), "expect a : " + JSONConstants.ELE_SEP + " ! around : " + sep.currentAndRest());
             }
         }
 
         // skip '}'
         sep.next();
         if (checkEnd) {
-            Tools.assert0(Tools.isEmpty(sep.next()), "expect nothing after '}' !");
+            InnerTools.assert0(InnerTools.isEmpty(sep.next()), "expect nothing after '}' !");
         }
         return result;
     }
@@ -880,7 +877,7 @@ public class JSONObject implements JSON, Map {
                 String methodName = method.getName();
                 int modifier = method.getModifiers();
 
-                if (JSONParseUtils.startsWith(methodName, Constants.BEAN_GETTER_PREFIXES)
+                if (JSONParseUtils.startsWith(methodName, JSONConstants.BEAN_GETTER_PREFIXES)
                         && (Modifier.isPublic(modifier) && (!Modifier.isStatic(modifier) && (!Modifier.isAbstract(modifier))))
                         && (method.getParameterTypes().length == 0)) {
                     Object invokeResult = method.invoke(obj);
@@ -958,7 +955,7 @@ public class JSONObject implements JSON, Map {
                 String methodName = method.getName();
                 int modifier = method.getModifiers();
 
-                if (JSONParseUtils.startsWith(methodName, Constants.BEAN_SETTER_PREFIXES)
+                if (JSONParseUtils.startsWith(methodName, JSONConstants.BEAN_SETTER_PREFIXES)
                         && (Modifier.isPublic(modifier) && (!Modifier.isStatic(modifier) && (!Modifier.isAbstract(modifier))))
                         && (method.getParameterTypes().length == 1)) {
                     String key = JSONParseUtils.getKeyForSetter(clazz, methodName, config);

@@ -1,14 +1,12 @@
 package com.hx.json.test;
 
-import com.hx.json.config.simple.JSONFieldKeyNodeParser;
+import com.hx.common.util.InnerTools;
 import com.hx.json.JSONObject;
 import com.hx.json.JSONParseUtils;
+import com.hx.json.config.simple.JSONFieldKeyNodeParser;
 import com.hx.json.interf.JSONField;
-import com.hx.log.util.Log;
 import org.junit.Before;
 import org.junit.Test;
-
-import static com.hx.log.util.Log.info;
 
 /**
  * Test05JSONFieldValueParser
@@ -22,7 +20,7 @@ public class Test05JSONFieldValueParser {
 
     @Before
     public void before() {
-        Log.infoFatalLogger.logPatternChain = null;
+
     }
 
     @Test
@@ -34,10 +32,10 @@ public class Test05JSONFieldValueParser {
         JSONParseUtils.setKeyNodeParser(new JSONFieldKeyNodeParser());
 
         JSONObject obj = JSONObject.fromObject(json);
-        info(obj.toString() );
+        InnerTools.log(obj.toString() );
 
         User newUser = JSONObject.toBean(obj, User.class);
-        info(newUser);
+        InnerTools.log(newUser);
 
     }
 

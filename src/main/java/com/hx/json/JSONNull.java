@@ -1,8 +1,8 @@
 package com.hx.json;
 
+import com.hx.common.util.InnerTools;
 import com.hx.json.interf.JSON;
 import com.hx.json.interf.JSONType;
-import com.hx.log.util.Tools;
 
 /**
  * represent null
@@ -54,7 +54,7 @@ public class JSONNull implements JSON {
 
     @Override
     public String toString(int indentFactor) {
-        return Tools.NULL;
+        return InnerTools.NULL;
     }
 
     /**

@@ -1,10 +1,10 @@
 package com.hx.json.test;
 
+import com.hx.common.util.InnerTools;
 import com.hx.json.JSONArray;
 import com.hx.json.JSONObject;
 import com.hx.json.JSONParseUtils;
 import com.hx.json.config.simple.SimpleJSONConfig;
-import com.hx.log.util.Log;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,8 +12,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
-
-import static com.hx.log.util.Log.info;
 
 /**
  * Test03JSONToBean
@@ -26,7 +24,7 @@ public class Test03JSONToBean {
 
     @Before
     public void before() {
-        Log.infoFatalLogger.logPatternChain = null;
+
     }
 
     @Test
@@ -36,7 +34,7 @@ public class Test03JSONToBean {
 
         User user = JSONObject.toBean(obj, User.class);
         JSONParseUtils.parse("{}", null);
-        info(user.toString() );
+        InnerTools.log(user.toString() );
 
     }
 
@@ -45,10 +43,10 @@ public class Test03JSONToBean {
 
         JSONArray arr = JSONArray.fromObject(new int[]{1, 2, 4} );
 //        JSONArray arr = JSONArray.fromObject(new Integer[]{1, 2, 4} );
-        info(arr.toString() );
+        InnerTools.log(arr.toString() );
 
         JSONObject obj = JSONParseUtils.toBean("{'name':'hx', 'age':43}", new SimpleJSONConfig(), JSONObject.class);
-        info(obj.toString() );
+        InnerTools.log(obj.toString() );
 
     }
 
@@ -72,15 +70,15 @@ public class Test03JSONToBean {
         Class clazz = User.class;
         Field friends = clazz.getDeclaredField("friends");
 
-        info(friends.getType() );
+        InnerTools.log(friends.getType() );
         Type type = friends.getGenericType() ;
         // 如果friends为rawType, 则type为Class
         if(type instanceof ParameterizedType) {
             ParameterizedType paramType = (ParameterizedType) type;
-            info(paramType.getActualTypeArguments() );
+            InnerTools.log(paramType.getActualTypeArguments() );
         }
 
-        info(type);
+        InnerTools.log(type);
 
 
     }
