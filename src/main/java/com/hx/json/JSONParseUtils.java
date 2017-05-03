@@ -1,5 +1,6 @@
 package com.hx.json;
 
+import com.hx.common.collection.SimpleFixedSizeHashMap;
 import com.hx.common.str.WordsSeprator;
 import com.hx.common.util.InnerTools;
 import com.hx.json.config.interf.JSONConfig;
@@ -46,7 +47,7 @@ public final class JSONParseUtils {
     /**
      * 缓存的Type -> Type类型 的映射
      */
-    private static Map<Type, Integer> CACHED_TYPE_2_TYPE_IMPL = new HashMap<>();
+    private static Map<Type, Integer> CACHED_TYPE_2_TYPE_IMPL = new SimpleFixedSizeHashMap<>(200);
 
     // disable constructor
     private JSONParseUtils() {

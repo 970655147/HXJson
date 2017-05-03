@@ -878,10 +878,14 @@ public class JSONObject implements JSON, Map {
                 int modifier = method.getModifiers();
 
                 if (JSONParseUtils.startsWith(methodName, JSONConstants.BEAN_GETTER_PREFIXES)
-                        && (Modifier.isPublic(modifier) && (!Modifier.isStatic(modifier) && (!Modifier.isAbstract(modifier))))
+                        && (Modifier.isPublic(modifier) && (!Modifier.isStatic(modifier)) )
                         && (method.getParameterTypes().length == 0)) {
                     Object invokeResult = method.invoke(obj);
                     String key = JSONParseUtils.getKeyForGetter(clazz, methodName, config);
+                    if(invokeResult == null) {
+                        result.put(key, JSONNull.getInstance());
+                        continue ;
+                    }
 
                     Class resultClazz = invokeResult.getClass();
                     if ((boolean.class == resultClazz) || (Boolean.class == resultClazz)) {
