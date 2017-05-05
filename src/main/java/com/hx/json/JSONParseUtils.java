@@ -405,7 +405,9 @@ public final class JSONParseUtils {
             sb.append(JSONConstants.TO_STRING_ELE_SEP);
         }
 
-        InnerTools.removeLastSep(sb, JSONConstants.TO_STRING_ELE_SEP);
+        if (obj.size() > 0) {
+            InnerTools.removeLastSep(sb, JSONConstants.TO_STRING_ELE_SEP);
+        }
         sb.append(JSONConstants.OBJ_END);
     }
 
@@ -427,7 +429,9 @@ public final class JSONParseUtils {
             sb.append(JSONConstants.TO_STRING_ELE_SEP);
         }
 
-        InnerTools.removeLastSep(sb, JSONConstants.TO_STRING_ELE_SEP);
+        if (obj.size() > 0) {
+            InnerTools.removeLastSep(sb, JSONConstants.TO_STRING_ELE_SEP);
+        }
         sb.append(JSONConstants.ARR_END);
     }
 
@@ -468,7 +472,9 @@ public final class JSONParseUtils {
             sb.append(JSONConstants.TO_STRING_ELE_SEP + InnerTools.CRLF);
         }
 
-        InnerTools.removeLastSep(sb, JSONConstants.TO_STRING_ELE_SEP + InnerTools.CRLF);
+        if (obj.size() > 0) {
+            InnerTools.removeLastSep(sb, JSONConstants.TO_STRING_ELE_SEP + InnerTools.CRLF);
+        }
         sb.append(InnerTools.CRLF);
         appendBackspace(sb, identCnt - indentFactor);
         sb.append(JSONConstants.OBJ_END);
@@ -496,7 +502,9 @@ public final class JSONParseUtils {
             sb.append(JSONConstants.TO_STRING_ELE_SEP + InnerTools.CRLF);
         }
 
-        InnerTools.removeLastSep(sb, JSONConstants.TO_STRING_ELE_SEP + InnerTools.CRLF);
+        if (obj.size() > 0) {
+            InnerTools.removeLastSep(sb, JSONConstants.TO_STRING_ELE_SEP + InnerTools.CRLF);
+        }
         sb.append(InnerTools.CRLF);
         appendBackspace(sb, identCnt - indentFactor);
         sb.append(JSONConstants.ARR_END);
