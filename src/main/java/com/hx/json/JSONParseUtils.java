@@ -6,6 +6,7 @@ import com.hx.common.util.InnerTools;
 import com.hx.json.config.interf.JSONConfig;
 import com.hx.json.config.interf.JSONKeyNodeParser;
 import com.hx.json.config.interf.JSONValueNodeParser;
+import com.hx.json.config.simple.SimpleJSONConfig;
 import com.hx.json.config.simple.SimpleKeyNodeParser;
 import com.hx.json.config.simple.SimpleValueNodeParser;
 import com.hx.json.interf.*;
@@ -87,6 +88,10 @@ public final class JSONParseUtils {
         }
     }
 
+    public static JSON parse(Object obj) {
+        return parse(obj, new SimpleJSONConfig());
+    }
+
     /**
      * 将给定的Object转换为JSON
      *
@@ -132,6 +137,10 @@ public final class JSONParseUtils {
         } else {
             return JSONParseUtils.parse(obj, config);
         }
+    }
+
+    public static JSON fromBean(Object obj) {
+        return fromBean(obj, new SimpleJSONConfig());
     }
 
     /**
@@ -183,6 +192,11 @@ public final class JSONParseUtils {
 
         InnerTools.assert0("the type of 'obj' does not compatiable with 'argClazz' !");
         return null;
+    }
+
+    public static <T> T toBean(Object obj, Type type)
+            throws IllegalAccessException, InstantiationException {
+        return toBean(obj, new SimpleJSONConfig(), type);
     }
 
     /**
@@ -543,7 +557,7 @@ public final class JSONParseUtils {
      * @since 1.0
      */
     private static void appendForObjOrStr(JSON value, StringBuilder sb, int indentFactor) {
-        sb.append(JSONConstants.STR_SEP02 + value.toString(indentFactor) + JSONConstants.STR_SEP02);
+        sb.append(JSONConstants.STR_SEP02 + InnerTools.transfer(value.toString(indentFactor)) + JSONConstants.STR_SEP02);
     }
 
     /**
