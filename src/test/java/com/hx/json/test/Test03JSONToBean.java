@@ -45,7 +45,7 @@ public class Test03JSONToBean {
 //        JSONArray arr = JSONArray.fromObject(new Integer[]{1, 2, 4} );
         InnerTools.log(arr.toString() );
 
-        JSONObject obj = JSONParseUtils.toBean("{'name':'hx', 'age':43}", new SimpleJSONConfig(), JSONObject.class);
+        JSONObject obj = JSONParseUtils.toBean("{'name':'hx', 'age':43}", JSONObject.class, new SimpleJSONConfig());
         InnerTools.log(obj.toString() );
 
     }

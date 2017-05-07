@@ -79,7 +79,7 @@ public class JSONObject implements JSON, Map {
      * @since 1.0
      */
     public static <T> T toBean(JSONObject obj, Class<T> clazz, JSONConfig config) {
-        return toBean0(obj, config, clazz);
+        return toBean0(obj, clazz, config);
     }
 
     public static <T> T toBean(JSONObject obj, Class<T> clazz) {
@@ -943,7 +943,7 @@ public class JSONObject implements JSON, Map {
      * @date 4/16/2017 12:10 PM
      * @since 1.0
      */
-    static <T> T toBean0(JSONObject obj, JSONConfig config, Class<T> clazz) {
+    static <T> T toBean0(JSONObject obj, Class<T> clazz, JSONConfig config) {
         if ((obj == null) || (clazz == null)) {
             return null;
         }
@@ -983,7 +983,7 @@ public class JSONObject implements JSON, Map {
                     } else {
                         if (obj.containsKey(key)) {
                             Type paramType = method.getGenericParameterTypes()[0];
-                            Object valueObj = JSONParseUtils.toBean(obj.opt(key), config, paramType);
+                            Object valueObj = JSONParseUtils.toBean(obj.opt(key), paramType, config);
                             method.invoke(result, argClazz.cast(valueObj));
                         }
                     }

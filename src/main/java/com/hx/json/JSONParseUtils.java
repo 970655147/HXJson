@@ -145,7 +145,7 @@ public final class JSONParseUtils {
      * @date 4/29/2017 11:23 AM
      * @since 1.0
      */
-    public static <T> T toBean(Object obj, JSONConfig config, Type type)
+    public static <T> T toBean(Object obj, Type type, JSONConfig config)
             throws IllegalAccessException, InstantiationException {
         if ((obj == null) || (type == null)) {
             return null;
@@ -162,22 +162,22 @@ public final class JSONParseUtils {
         } else if (String.class == argClazz) {
             return argClazz.cast(String.valueOf(obj));
         } else if (argClazz.isArray()) {
-            return argClazz.cast(toBeanArray(obj, config, argClazz));
+            return argClazz.cast(toBeanArray(obj, argClazz, config));
         }
 
         if (obj instanceof JSONObject) {
             JSONObject jObject = (JSONObject) obj;
             if (Map.class.isAssignableFrom(argClazz)) {
-                return argClazz.cast(objToMap(jObject, config, type));
+                return argClazz.cast(objToMap(jObject, type, config));
             } else {
                 return JSONObject.toBean(jObject, argClazz);
             }
         } else if (obj instanceof JSONArray) {
             JSONArray jArray = (JSONArray) obj;
             if (List.class.isAssignableFrom(argClazz)) {
-                return argClazz.cast(arrToList(jArray, config, type));
+                return argClazz.cast(arrToList(jArray, type, config));
             } else if (Set.class.isAssignableFrom(argClazz)) {
-                return argClazz.cast(arrToSet(jArray, config, type));
+                return argClazz.cast(arrToSet(jArray, type, config));
             }
         }
 
@@ -187,7 +187,7 @@ public final class JSONParseUtils {
 
     public static <T> T toBean(Object obj, Type type)
             throws IllegalAccessException, InstantiationException {
-        return toBean(obj, new SimpleJSONConfig(), type);
+        return toBean(obj, type, new SimpleJSONConfig());
     }
 
     /**
@@ -488,15 +488,15 @@ public final class JSONParseUtils {
      * @date 4/29/2017 12:35 PM
      * @since 1.0
      */
-    private static Object toBeanArray(Object obj, JSONConfig config, Class argClazz)
+    private static Object toBeanArray(Object obj, Class argClazz, JSONConfig config)
             throws IllegalAccessException, InstantiationException {
         if (argClazz.isArray()) {
             if (obj instanceof JSONArray) {
                 JSONArray arr = (JSONArray) obj;
-                return jsonArray2TypedArray(arr, config, argClazz);
+                return jsonArray2TypedArray(arr, argClazz, config);
             } else if (obj instanceof Collection) {
                 Collection attrColl = (Collection) obj;
-                return collection2TypedArray(attrColl, config, argClazz);
+                return collection2TypedArray(attrColl, argClazz, config);
             }
         }
 
@@ -513,7 +513,7 @@ public final class JSONParseUtils {
      * @date 4/29/2017 4:13 PM
      * @since 1.0
      */
-    private static Map objToMap(JSONObject obj, JSONConfig config, Type type)
+    private static Map objToMap(JSONObject obj, Type type, JSONConfig config)
             throws IllegalAccessException, InstantiationException {
         Class argClazz = getClassBoundsType(type);
 
@@ -526,7 +526,7 @@ public final class JSONParseUtils {
             result = (Map) argClazz.newInstance();
         }
 
-        putObjToMap(obj, config, result, type);
+        putObjToMap(obj, result, type, config);
         return result;
     }
 
@@ -540,7 +540,7 @@ public final class JSONParseUtils {
      * @date 4/29/2017 4:13 PM
      * @since 1.0
      */
-    private static List arrToList(JSONArray arr, JSONConfig config, Type type)
+    private static List arrToList(JSONArray arr, Type type, JSONConfig config)
             throws IllegalAccessException, InstantiationException {
         Class argClazz = getClassBoundsType(type);
 
@@ -553,7 +553,7 @@ public final class JSONParseUtils {
             result = (List) argClazz.newInstance();
         }
 
-        putArrayToColl(arr, config, result, type);
+        putArrayToColl(arr, result, type, config);
         return result;
     }
 
@@ -567,7 +567,7 @@ public final class JSONParseUtils {
      * @date 4/29/2017 4:13 PM
      * @since 1.0
      */
-    private static Set arrToSet(JSONArray arr, JSONConfig config, Type type)
+    private static Set arrToSet(JSONArray arr, Type type, JSONConfig config)
             throws IllegalAccessException, InstantiationException {
         Class argClazz = getClassBoundsType(type);
 
@@ -580,7 +580,7 @@ public final class JSONParseUtils {
             result = (Set) argClazz.newInstance();
         }
 
-        putArrayToColl(arr, config, result, type);
+        putArrayToColl(arr, result, type, config);
         return result;
     }
 
@@ -595,7 +595,7 @@ public final class JSONParseUtils {
      * @date 4/29/2017 12:41 PM
      * @since 1.0
      */
-    private static Object jsonArray2TypedArray(JSONArray arr, JSONConfig config, Class argClazz)
+    private static Object jsonArray2TypedArray(JSONArray arr, Class argClazz, JSONConfig config)
             throws IllegalAccessException, InstantiationException {
         if ((boolean[].class == argClazz) || (Boolean[].class == argClazz)) {
             if (boolean[].class == argClazz) {
@@ -698,7 +698,7 @@ public final class JSONParseUtils {
             Class componentClazz = argClazz.getComponentType();
             Object[] attr = (Object[]) _attr;
             for (int i = 0, len = arr.size(); i < len; i++) {
-                attr[i] = toBean(arr.get(i), config, componentClazz);
+                attr[i] = toBean(arr.get(i), componentClazz, config);
             }
             return attr;
         }
@@ -717,7 +717,7 @@ public final class JSONParseUtils {
      * @date 4/29/2017 12:40 PM
      * @since 1.0
      */
-    private static Object collection2TypedArray(Collection attrColl, JSONConfig config, Class argClazz)
+    private static Object collection2TypedArray(Collection attrColl, Class argClazz, JSONConfig config)
             throws IllegalAccessException, InstantiationException {
         if ((boolean[].class == argClazz) || (Boolean[].class == argClazz)) {
             if (boolean[].class == argClazz) {
@@ -835,7 +835,7 @@ public final class JSONParseUtils {
             Object[] attr = (Object[]) _attr;
             int idx = 0;
             for (Object ele : attrColl) {
-                attr[idx++] = toBean(ele, config, componentClazz);
+                attr[idx++] = toBean(ele, componentClazz, config);
             }
             return attr;
         }
@@ -855,13 +855,13 @@ public final class JSONParseUtils {
      * @date 4/30/2017 10:30 AM
      * @since 1.0
      */
-    private static void putArrayToColl(JSONArray arr, JSONConfig config, Collection result, Type type)
+    private static void putArrayToColl(JSONArray arr, Collection result, Type type, JSONConfig config)
             throws IllegalAccessException, InstantiationException {
         // field specified type parameters
         if (type instanceof ParameterizedType) {
             Type typeParam = ((ParameterizedType) type).getActualTypeArguments()[0];
             for (int i = 0, len = arr.size(); i < len; i++) {
-                result.add(toBean(arr.get(i), config, typeParam));
+                result.add(toBean(arr.get(i), typeParam, config));
             }
         } else {
             result.addAll(arr);
@@ -880,14 +880,14 @@ public final class JSONParseUtils {
      * @date 4/30/2017 10:30 AM
      * @since 1.0
      */
-    private static void putObjToMap(JSONObject obj, JSONConfig config, Map result, Type type)
+    private static void putObjToMap(JSONObject obj, Map result, Type type, JSONConfig config)
             throws IllegalAccessException, InstantiationException {
         // field specified type parameters
         if (type instanceof ParameterizedType) {
             Type keyTypeParam = ((ParameterizedType) type).getActualTypeArguments()[0];
             Type valueTypeParam = ((ParameterizedType) type).getActualTypeArguments()[1];
             for (Map.Entry<String, Object> entry : obj.entrySet()) {
-                result.put(toBean(entry.getKey(), config, keyTypeParam), toBean(entry.getValue(), config, valueTypeParam));
+                result.put(toBean(entry.getKey(), keyTypeParam, config), toBean(entry.getValue(), valueTypeParam, config));
             }
         } else {
             result.putAll(obj);
