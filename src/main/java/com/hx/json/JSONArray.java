@@ -696,7 +696,7 @@ public class JSONArray implements JSON, List, RandomAccess {
         int idx = 0;
         if (!JSONConstants.ARR_END.equals(sep.seek())) {
             while (sep.hasNext()) {
-                JSON nextValue = JSONParseUtils.getNextValue(sep, "[" + idx + "]", config);
+                JSON nextValue = config.valueNodeParser().parse(sep, "[" + idx + "]", config);
                 result.eles.add(nextValue);
 
                 if (JSONConstants.ARR_END.equals(sep.seek())) {

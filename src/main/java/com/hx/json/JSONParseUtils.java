@@ -28,15 +28,6 @@ import java.util.*;
 public final class JSONParseUtils {
 
     /**
-     * 解析JSON的key的parser
-     */
-    private static JSONKeyNodeParser KEY_NODE_PARSER = new SimpleKeyNodeParser();
-    /**
-     * 解析JSONValue的parser
-     */
-    private static JSONValueNodeParser VALUE_NODE_PARSER = new SimpleValueNodeParser();
-
-    /**
      * Type的几种实现
      */
     public static final Integer TYPE_CLASS = 0;
@@ -234,32 +225,6 @@ public final class JSONParseUtils {
     }
 
     /**
-     * 配置当前Utils的JSONKeyNodeParser
-     *
-     * @param keyNodeParser 给定的JSONKeyNodeParser
-     * @return void
-     * @author Jerry.X.He
-     * @date 4/23/2017 2:55 PM
-     * @since 1.0
-     */
-    public static void setKeyNodeParser(JSONKeyNodeParser keyNodeParser) {
-        KEY_NODE_PARSER = keyNodeParser;
-    }
-
-    /**
-     * 配置当前Utils的JSONValueNodeParser
-     *
-     * @param valueNodeParser 给定的JSONValueNodeParser
-     * @return void
-     * @author Jerry.X.He
-     * @date 4/23/2017 2:55 PM
-     * @since 1.0
-     */
-    public static void setValueNodeParser(JSONValueNodeParser valueNodeParser) {
-        VALUE_NODE_PARSER = valueNodeParser;
-    }
-
-    /**
      * 判断给定的字符串是否 匹配给定的后缀列表中某一个后缀
      *
      * @param str      给定的字符串
@@ -337,54 +302,6 @@ public final class JSONParseUtils {
         }
 
         return str;
-    }
-
-    /**
-     * 获取给定的clazz的getterMethodName对应的field的key
-     *
-     * @param clazz            给定的class
-     * @param getterMethodName 给定的field的getter
-     * @param config           解析json的config
-     * @return java.lang.String
-     * @author Jerry.X.He
-     * @date 5/1/2017 5:58 PM
-     * @since 1.0
-     */
-    static String getKeyForGetter(Class clazz, String getterMethodName, JSONConfig config) {
-        InnerTools.assert0(KEY_NODE_PARSER != null, "'KEY_NODE_PARSER' can't be null !");
-        return KEY_NODE_PARSER.getKeyForGetter(clazz, getterMethodName, config);
-    }
-
-    /**
-     * 获取给定的clazz的getterMethodName对应的field的key
-     *
-     * @param clazz            给定的class
-     * @param setterMethodName 给定的field的setter
-     * @param config           解析json的config
-     * @return java.lang.String
-     * @author Jerry.X.He
-     * @date 5/1/2017 5:58 PM
-     * @since 1.0
-     */
-    static String getKeyForSetter(Class clazz, String setterMethodName, JSONConfig config) {
-        InnerTools.assert0(KEY_NODE_PARSER != null, "'KEY_NODE_PARSER' can't be null !");
-        return KEY_NODE_PARSER.getKeyForSetter(clazz, setterMethodName, config);
-    }
-
-    /**
-     * 从当前Seprator中提取下一个value, 可能是JSONStr, JSONInt, JSONBool, JSONObject, JSONArray
-     *
-     * @param sep    seprator
-     * @param key    the key
-     * @param config the config
-     * @return com.hx.log.json.interf.JSON
-     * @author Jerry.X.He
-     * @date 4/15/2017 5:10 PM
-     * @since 1.0
-     */
-    static JSON getNextValue(WordsSeprator sep, String key, JSONConfig config) {
-        InnerTools.assert0(VALUE_NODE_PARSER != null, "'VALUE_NODE_PARSER' can't be null !");
-        return VALUE_NODE_PARSER.parse(sep, key, config);
     }
 
     /**

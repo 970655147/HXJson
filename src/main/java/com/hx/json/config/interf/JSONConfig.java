@@ -9,6 +9,22 @@ package com.hx.json.config.interf;
  */
 public interface JSONConfig {
 
+    /**
+     * 获取解析json需要使用的KeyNodeParser [解析key]
+     *
+     * @author Jerry.X.He
+     * @date 5/7/2017 8:08 PM
+     * @since 1.0
+     */
+    JSONKeyNodeParser keyNodeParser();
 
+    /**
+     * 获取解析json需要使用的ValueNodeParser [解析value]
+     *
+     * @author Jerry.X.He
+     * @date 5/7/2017 8:08 PM
+     * @since 1.0
+     */
+    JSONValueNodeParser valueNodeParser();
 
 }

@@ -78,12 +78,12 @@ public class JSONObject implements JSON, Map {
      * @date 4/16/2017 12:10 PM
      * @since 1.0
      */
-    public static <T> T toBean(JSONObject obj, JSONConfig config, Class<T> clazz) {
+    public static <T> T toBean(JSONObject obj, Class<T> clazz, JSONConfig config) {
         return toBean0(obj, config, clazz);
     }
 
     public static <T> T toBean(JSONObject obj, Class<T> clazz) {
-        return toBean(obj, new SimpleJSONConfig(), clazz);
+        return toBean(obj, clazz, new SimpleJSONConfig());
     }
 
     public static JSONObject fromObject(Object obj) {
@@ -746,7 +746,7 @@ public class JSONObject implements JSON, Map {
                 );
                 InnerTools.assert0(JSONConstants.KV_SEP.equals(sep.next()), "expect a : " + JSONConstants.KV_SEP + " ! around : " + sep.currentAndRest());
                 nextKey = JSONParseUtils.trimForSurroundSep(nextKey, JSONConstants.KEY_SEPS);
-                JSON nextValue = JSONParseUtils.getNextValue(sep, nextKey, config);
+                JSON nextValue = config.valueNodeParser().parse(sep, nextKey, config);
                 result.eles.put(nextKey, nextValue);
 
                 if (JSONConstants.OBJ_END.equals(sep.seek())) {
@@ -881,7 +881,7 @@ public class JSONObject implements JSON, Map {
                         && (Modifier.isPublic(modifier) && (!Modifier.isStatic(modifier)) )
                         && (method.getParameterTypes().length == 0)) {
                     Object invokeResult = method.invoke(obj);
-                    String key = JSONParseUtils.getKeyForGetter(clazz, methodName, config);
+                    String key = config.keyNodeParser().getKeyForGetter(clazz, methodName, config);
                     if(invokeResult == null) {
                         result.put(key, JSONNull.getInstance());
                         continue ;
@@ -962,7 +962,7 @@ public class JSONObject implements JSON, Map {
                 if (JSONParseUtils.startsWith(methodName, JSONConstants.BEAN_SETTER_PREFIXES)
                         && (Modifier.isPublic(modifier) && (!Modifier.isStatic(modifier) && (!Modifier.isAbstract(modifier))))
                         && (method.getParameterTypes().length == 1)) {
-                    String key = JSONParseUtils.getKeyForSetter(clazz, methodName, config);
+                    String key = config.keyNodeParser().getKeyForSetter(clazz, methodName, config);
 
                     Class argClazz = method.getParameterTypes()[0];
                     if ((boolean.class == argClazz) || (Boolean.class == argClazz)) {
