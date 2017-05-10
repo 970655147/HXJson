@@ -474,7 +474,8 @@ public final class JSONParseUtils {
      * @since 1.0
      */
     private static void appendForObjOrStr(JSON value, StringBuilder sb, int indentFactor) {
-        sb.append(JSONConstants.STR_SEP02 + InnerTools.transfer(value.toString(indentFactor)) + JSONConstants.STR_SEP02);
+        sb.append(JSONConstants.STR_SEP02 + InnerTools.transfer(value.toString(indentFactor), InnerTools.asSet('\\', '"'))
+                + JSONConstants.STR_SEP02);
     }
 
     /**
