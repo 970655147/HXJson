@@ -57,6 +57,11 @@ public class JSONStr implements JSON {
         return str;
     }
 
+    @Override
+    public String toString() {
+        return toString(0);
+    }
+
     /**
      * 根据给定的Object创建一个JSONStr
      *

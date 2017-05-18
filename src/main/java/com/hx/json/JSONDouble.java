@@ -56,6 +56,11 @@ public class JSONDouble implements JSON {
         return String.valueOf(val);
     }
 
+    @Override
+    public String toString() {
+        return toString(0);
+    }
+
     /**
      * 根据给定的值创建一个JSONDouble
      *

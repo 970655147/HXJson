@@ -56,6 +56,11 @@ public class JSONObj implements JSON {
         return String.valueOf(obj);
     }
 
+    @Override
+    public String toString() {
+        return toString(0);
+    }
+
     /**
      * 根据给定的Object创建一个JSONObj
      *

@@ -35,7 +35,7 @@ public class JSONObject implements JSON, Map {
     /**
      * 存放各个元素
      */
-    Map<String, JSON> eles;
+    protected Map<String, JSON> eles;
 
     public JSONObject() {
         eles = new LinkedHashMap<>();

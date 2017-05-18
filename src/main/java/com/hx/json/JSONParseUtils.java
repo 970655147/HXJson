@@ -1,15 +1,11 @@
 package com.hx.json;
 
 import com.hx.common.collection.SimpleFixedSizeHashMap;
-import com.hx.common.str.WordsSeprator;
 import com.hx.common.util.InnerTools;
 import com.hx.json.config.interf.JSONConfig;
-import com.hx.json.config.interf.JSONKeyNodeParser;
-import com.hx.json.config.interf.JSONValueNodeParser;
 import com.hx.json.config.simple.SimpleJSONConfig;
-import com.hx.json.config.simple.SimpleKeyNodeParser;
-import com.hx.json.config.simple.SimpleValueNodeParser;
-import com.hx.json.interf.*;
+import com.hx.json.interf.JSON;
+import com.hx.json.interf.JSONType;
 import com.hx.json.util.JSONConstants;
 
 import java.lang.reflect.GenericArrayType;
@@ -35,6 +31,14 @@ public final class JSONParseUtils {
     public static final Integer TYPE_GENERIC_ARRAY = TYPE_PARAMETER_TYPE + 1;
     public static final Integer TYPE_TYPE_VARIABLE = TYPE_GENERIC_ARRAY + 1;
     public static final Integer TYPE_WILDCARD_TYPE = TYPE_TYPE_VARIABLE + 1;
+
+    /**
+     * flatternMap 的时候的分隔符
+     */
+    public static String FLATTERN_MAP_SEP = ".";
+    public static String FLATTERN_MAP_ARR_PREFIX = "$";
+    public static String FLATTERN_MAP_ARR_LBRACKET = "[";
+    public static String FLATTERN_MAP_ARR_RBRACKET = "]";
 
     /**
      * 缓存的Type -> Type类型 的映射
@@ -305,6 +309,105 @@ public final class JSONParseUtils {
     }
 
     /**
+     * 把obj中的所有的元素 flattern 到结果的result中
+     * {"name":"hx","age":21,"friends":{"name":"document","age":16}}
+     *  =>
+     * {"name":"hx","age":"21","friends":"{\"name\" : \"document\", \"age\" : "16" }","friends.name":"document","friends.age":"16"}
+     * @param obj    obj
+     * @param prefix prefix
+     * @param result result
+     * @return void
+     * @author Jerry.X.He
+     * @date 5/18/2017 7:24 PM
+     * @since 1.0
+     */
+    public static void flatternMap(JSONObject obj, String prefix, Map<String, String> result) {
+        boolean isPrefixEmpty = InnerTools.isEmpty(prefix);
+        for(Map.Entry<String, JSON> entry : obj.eles.entrySet() ) {
+            JSON value = entry.getValue();
+            String resultKey = isPrefixEmpty ? entry.getKey() : prefix + FLATTERN_MAP_SEP + entry.getKey();
+            switch (value.type() ) {
+                case OBJ: {
+                    JSON json = JSONParseUtils.parse(value.value());
+                    result.put(resultKey, json.toString());
+                    flatternMap(json, prefix, result);
+                    break;
+                }
+                case OBJECT: {
+                    result.put(resultKey, value.toString());
+                    flatternMap((JSONObject) entry.getValue(), resultKey, result);
+                    break;
+                }
+                case ARRAY: {
+                    result.put(resultKey, value.toString());
+                    flatternMap((JSONArray) entry.getValue(), resultKey, result);
+                    break;
+                }
+                case NULL:
+                default: {
+                    result.put(resultKey, value.toString());
+                    break;
+                }
+            }
+        }
+    }
+
+    public static Map<String, String> flatternMap(JSONObject obj) {
+        Map<String, String> result = new LinkedHashMap<>();
+        flatternMap(obj, InnerTools.EMPTY_STR, result);
+        return result;
+    }
+
+    /**
+     * 把obj中的所有的元素 flattern 到结果的result中
+     * [{"name":"hx","age":21}]
+     *  =>
+     * {"$[0]":"[{\"name\":\"hx\",\"age\":21}]","$[0].name":"hx","$[0].age":"21"}
+     * @param arr    arr
+     * @param prefix prefix
+     * @param result result
+     * @return void
+     * @author Jerry.X.He
+     * @date 5/18/2017 7:24 PM
+     * @since 1.0
+     */
+    public static void flatternMap(JSONArray arr, String prefix, Map<String, String> result) {
+        for(int i=0, len=arr.size(); i<len; i++) {
+            JSON value = arr.eles.get(i);
+            String resultKey = prefix + FLATTERN_MAP_ARR_LBRACKET + i + FLATTERN_MAP_ARR_RBRACKET;
+            switch (value.type() ) {
+                case OBJ: {
+                    JSON json = JSONParseUtils.parse(value.value());
+                    result.put(resultKey, json.toString());
+                    flatternMap(json, prefix, result);
+                    break;
+                }
+                case OBJECT: {
+                    result.put(resultKey, value.toString());
+                    flatternMap((JSONObject) value, resultKey, result);
+                    break;
+                }
+                case ARRAY: {
+                    result.put(resultKey, value.toString());
+                    flatternMap((JSONArray) value, resultKey, result);
+                    break;
+                }
+                case NULL:
+                default: {
+                    result.put(resultKey, value.toString());
+                    break;
+                }
+            }
+        }
+    }
+
+    public static Map<String, String> flatternMap(JSONArray arr) {
+        Map<String, String> result = new LinkedHashMap<>();
+        flatternMap(arr, FLATTERN_MAP_ARR_PREFIX, result);
+        return result;
+    }
+
+    /**
      * 将给定的JSONObject输出到sb中[尽量压缩]
      *
      * @param obj 给定的JSONObject
@@ -440,6 +543,45 @@ public final class JSONParseUtils {
         appendBackspace(sb, identCnt - indentFactor);
         sb.append(JSONConstants.ARR_END);
     }
+
+    /**
+     * 处理解析 Object 之后的结果 [JSONObject, JSONArray]
+     *
+     * @param json json
+     * @param prefix prefix
+     * @param result result
+     * @return void
+     * @author Jerry.X.He
+     * @date 5/18/2017 7:40 PM
+     * @since 1.0
+     */
+    static void flatternMap(JSON json, String prefix, Map<String, String> result) {
+        if(json == null) {
+            return ;
+        }
+
+        switch (json.type()) {
+            case OBJ: {
+                flatternMap(JSONParseUtils.parse(json), prefix, result);
+                break;
+            }
+            case OBJECT: {
+                flatternMap((JSONObject) json, prefix, result);
+                break;
+            }
+            case ARRAY: {
+                flatternMap((JSONArray) json, prefix, result);
+                break;
+            }
+            case NULL:
+            default: {
+
+                break;
+            }
+        }
+    }
+
+    // ----------------- 辅助方法 -----------------------
 
     /**
      * 向给定的sb填充identFactor个空白字符

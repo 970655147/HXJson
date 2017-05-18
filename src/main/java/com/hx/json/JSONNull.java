@@ -57,6 +57,11 @@ public class JSONNull implements JSON {
         return InnerTools.NULL;
     }
 
+    @Override
+    public String toString() {
+        return toString(0);
+    }
+
     /**
      * 根据给定的Object创建一个JSONNull
      *

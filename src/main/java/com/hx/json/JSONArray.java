@@ -27,7 +27,7 @@ public class JSONArray implements JSON, List, RandomAccess {
     /**
      * 存储当前Array的所有元素
      */
-    List<JSON> eles;
+    protected List<JSON> eles;
 
     public JSONArray() {
         eles = new ArrayList<>();
