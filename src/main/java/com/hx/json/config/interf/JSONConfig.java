@@ -27,4 +27,14 @@ public interface JSONConfig {
      */
     JSONValueNodeParser valueNodeParser();
 
+    /**
+     * 获取 toBean, fromBean 之前之后, 需要对目标 JSONObject 预处理的processor
+     *
+     * @return JSONBeanProcessor
+     * @author Jerry.X.He
+     * @date 5/29/2017 11:21 AM
+     * @since 1.0
+     */
+    JSONBeanProcessor beanProcessor();
+
 }

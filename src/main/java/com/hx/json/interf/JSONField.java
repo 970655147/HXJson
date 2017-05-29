@@ -24,6 +24,6 @@ public @interface JSONField {
      * @date 5/1/2017 6:11 PM
      * @since 1.0
      */
-    String value();
+    String[] value();
 
 }

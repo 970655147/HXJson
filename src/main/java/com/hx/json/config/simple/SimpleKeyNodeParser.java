@@ -16,13 +16,13 @@ import com.hx.json.util.JSONConstants;
 public class SimpleKeyNodeParser implements JSONKeyNodeParser {
 
     @Override
-    public String getKeyForGetter(Class clazz, String getterMethodName, JSONConfig config) {
+    public String getKeyForGetter(Object obj, Class clazz, String getterMethodName, JSONConfig config) {
         String fieldName = JSONParseUtils.trimIfStartsWith(getterMethodName, JSONConstants.BEAN_GETTER_PREFIXES);
         return InnerTools.lowerCaseFirstChar(fieldName);
     }
 
     @Override
-    public String getKeyForSetter(Class clazz, String setterMethodName, JSONConfig config) {
+    public String getKeyForSetter(Object obj, Class clazz, String setterMethodName, JSONConfig config) {
         String fieldName = JSONParseUtils.trimIfStartsWith(setterMethodName, JSONConstants.BEAN_SETTER_PREFIXES);
         return InnerTools.lowerCaseFirstChar(fieldName);
     }

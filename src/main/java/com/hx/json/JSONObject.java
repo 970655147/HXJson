@@ -2,9 +2,9 @@ package com.hx.json;
 
 import com.hx.common.str.WordsSeprator;
 import com.hx.common.util.InnerTools;
+import com.hx.json.config.interf.JSONConfig;
 import com.hx.json.config.simple.SimpleJSONConfig;
 import com.hx.json.interf.JSON;
-import com.hx.json.config.interf.JSONConfig;
 import com.hx.json.interf.JSONType;
 import com.hx.json.util.JSONConstants;
 
@@ -78,8 +78,20 @@ public class JSONObject implements JSON, Map {
      * @date 4/16/2017 12:10 PM
      * @since 1.0
      */
+    public static <T> void toBean(JSONObject obj, Class<T> clazz, T accepter, JSONConfig config) {
+        toBean0(obj, clazz, accepter, config);
+    }
+
     public static <T> T toBean(JSONObject obj, Class<T> clazz, JSONConfig config) {
-        return toBean0(obj, clazz, config);
+        T result = null;
+        try {
+            result = clazz.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        toBean(obj, clazz, result, config);
+        return result;
     }
 
     public static <T> T toBean(JSONObject obj, Class<T> clazz) {
@@ -688,6 +700,25 @@ public class JSONObject implements JSON, Map {
         eles.clear();
     }
 
+    /**
+     * 将当前的JSONObject转换为一个实体
+     *
+     * @param config   转换的所需的JSONConfig
+     * @param accepter 接收数据的对象
+     * @param clazz    给定的实体的Class
+     * @return T
+     * @author Jerry.X.He
+     * @date 4/16/2017 12:10 PM
+     * @since 1.0
+     */
+    public <T> void toBean(Class<T> clazz, T accepter, JSONConfig config) {
+        toBean(this, clazz, accepter, config);
+    }
+
+    public <T> T toBean(Class<T> clazz, JSONConfig config) {
+        return JSONObject.toBean(this, clazz, config);
+    }
+
     // ----------------- 辅助数据结构 -----------------------
     private static class MapEentry<K, V> implements Map.Entry<K, V> {
         /**
@@ -729,7 +760,7 @@ public class JSONObject implements JSON, Map {
      * @since 1.0
      */
     public static JSONObject fromString(WordsSeprator sep, JSONConfig config, boolean checkEnd) {
-        if(sep == null) {
+        if (sep == null) {
             return NULL_JSON_OBJECT;
         }
         InnerTools.assert0(JSONConstants.OBJ_START.equals(sep.next()), "expect a : " + JSONConstants.OBJ_START + " ! around : " + sep.currentAndRest());
@@ -765,7 +796,7 @@ public class JSONObject implements JSON, Map {
     }
 
     public static JSONObject fromString(String str, JSONConfig config) {
-        if(str == null) {
+        if (str == null) {
             return NULL_JSON_OBJECT;
         }
 
@@ -784,7 +815,7 @@ public class JSONObject implements JSON, Map {
      * @since 1.0
      */
     public static JSONObject fromObject(JSONObject obj, JSONConfig config) {
-        if(obj == null) {
+        if (obj == null) {
             return NULL_JSON_OBJECT;
         }
 
@@ -839,7 +870,7 @@ public class JSONObject implements JSON, Map {
      * @since 1.0
      */
     public static JSONObject fromMap(Map map, JSONConfig config) {
-        if(map == null) {
+        if (map == null) {
             return NULL_JSON_OBJECT;
         }
 
@@ -861,7 +892,7 @@ public class JSONObject implements JSON, Map {
      * @since 1.0
      */
     public static JSONObject fromBean(Object obj, JSONConfig config) {
-        if(obj == null) {
+        if (obj == null) {
             return NULL_JSON_OBJECT;
         }
         Class clazz = obj.getClass();
@@ -878,13 +909,13 @@ public class JSONObject implements JSON, Map {
                 int modifier = method.getModifiers();
 
                 if (JSONParseUtils.startsWith(methodName, JSONConstants.BEAN_GETTER_PREFIXES)
-                        && (Modifier.isPublic(modifier) && (!Modifier.isStatic(modifier)) )
+                        && (Modifier.isPublic(modifier) && (!Modifier.isStatic(modifier)))
                         && (method.getParameterTypes().length == 0)) {
                     Object invokeResult = method.invoke(obj);
-                    String key = config.keyNodeParser().getKeyForGetter(clazz, methodName, config);
-                    if(invokeResult == null) {
+                    String key = config.keyNodeParser().getKeyForGetter(obj, clazz, methodName, config);
+                    if (invokeResult == null) {
                         result.put(key, JSONNull.getInstance());
-                        continue ;
+                        continue;
                     }
 
                     Class resultClazz = invokeResult.getClass();
@@ -913,6 +944,7 @@ public class JSONObject implements JSON, Map {
             return NULL_JSON_OBJECT;
         }
 
+        config.beanProcessor().afterFromBean(obj, config, result);
         return result;
     }
 
@@ -935,26 +967,27 @@ public class JSONObject implements JSON, Map {
     /**
      * 将给定的JSONObject转换为一个实体
      *
-     * @param obj    给定的JSONObject
-     * @param config 转换的所需的JSONConfig
-     * @param clazz  给定的实体的Class
+     * @param obj      给定的JSONObject
+     * @param clazz    给定的实体的Class
+     * @param receiver 接收数据的对象
+     * @param config   转换的所需的JSONConfig
      * @return T
      * @author Jerry.X.He
      * @date 4/16/2017 12:10 PM
      * @since 1.0
      */
-    static <T> T toBean0(JSONObject obj, Class<T> clazz, JSONConfig config) {
+    static <T> void toBean0(JSONObject obj, Class<T> clazz, T receiver, JSONConfig config) {
         if ((obj == null) || (clazz == null)) {
-            return null;
+            return;
         }
         int clazzModifier = clazz.getModifiers();
         if ((!Modifier.isPublic(clazzModifier)) || (Modifier.isAbstract(clazzModifier))) {
-            return null;
+            return;
         }
 
+        config.beanProcessor().beforeToBean(obj, config, receiver);
         Method[] methods = clazz.getDeclaredMethods();
         try {
-            T result = clazz.newInstance();
             for (Method method : methods) {
                 String methodName = method.getName();
                 int modifier = method.getModifiers();
@@ -962,38 +995,36 @@ public class JSONObject implements JSON, Map {
                 if (JSONParseUtils.startsWith(methodName, JSONConstants.BEAN_SETTER_PREFIXES)
                         && (Modifier.isPublic(modifier) && (!Modifier.isStatic(modifier) && (!Modifier.isAbstract(modifier))))
                         && (method.getParameterTypes().length == 1)) {
-                    String key = config.keyNodeParser().getKeyForSetter(clazz, methodName, config);
+                    String key = config.keyNodeParser().getKeyForSetter(receiver, clazz, methodName, config);
 
                     Class argClazz = method.getParameterTypes()[0];
                     if ((boolean.class == argClazz) || (Boolean.class == argClazz)) {
-                        method.invoke(result, obj.optBoolean(key));
+                        method.invoke(receiver, obj.optBoolean(key));
                     } else if (((int.class == argClazz) || (Integer.class == argClazz))
                             || ((byte.class == argClazz) || (Byte.class == argClazz))
                             || ((short.class == argClazz) || (Short.class == argClazz))
                             ) {
-                        method.invoke(result, obj.optInt(key));
+                        method.invoke(receiver, obj.optInt(key));
                     } else if ((long.class == argClazz) || (Long.class == argClazz)) {
-                        method.invoke(result, obj.optLong(key));
+                        method.invoke(receiver, obj.optLong(key));
                     } else if ((float.class == argClazz) || (Float.class == argClazz)) {
-                        method.invoke(result, obj.optFloat(key));
+                        method.invoke(receiver, obj.optFloat(key));
                     } else if ((double.class == argClazz) || (Double.class == argClazz)) {
-                        method.invoke(result, obj.optDouble(key));
+                        method.invoke(receiver, obj.optDouble(key));
                     } else if (String.class == argClazz) {
-                        method.invoke(result, obj.optString(key));
+                        method.invoke(receiver, obj.optString(key));
                     } else {
                         if (obj.containsKey(key)) {
                             Type paramType = method.getGenericParameterTypes()[0];
                             Object valueObj = JSONParseUtils.toBean(obj.opt(key), paramType, config);
-                            method.invoke(result, argClazz.cast(valueObj));
+                            method.invoke(receiver, argClazz.cast(valueObj));
                         }
                     }
                 }
             }
-
-            return result;
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return;
         }
     }
 

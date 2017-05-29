@@ -34,7 +34,7 @@ public class MapKeyNodeParser implements JSONKeyNodeParser {
     }
 
     @Override
-    public String getKeyForGetter(Class clazz, String getterMethodName, JSONConfig config) {
+    public String getKeyForGetter(Object obj, Class clazz, String getterMethodName, JSONConfig config) {
         String fieldName = JSONParseUtils.trimIfStartsWith(getterMethodName, JSONConstants.BEAN_GETTER_PREFIXES);
         fieldName = InnerTools.lowerCaseFirstChar(fieldName);
 
@@ -42,7 +42,7 @@ public class MapKeyNodeParser implements JSONKeyNodeParser {
     }
 
     @Override
-    public String getKeyForSetter(Class clazz, String setterMethodName, JSONConfig config) {
+    public String getKeyForSetter(Object obj, Class clazz, String setterMethodName, JSONConfig config) {
         String fieldName = JSONParseUtils.trimIfStartsWith(setterMethodName, JSONConstants.BEAN_SETTER_PREFIXES);
         fieldName = InnerTools.lowerCaseFirstChar(fieldName);
 

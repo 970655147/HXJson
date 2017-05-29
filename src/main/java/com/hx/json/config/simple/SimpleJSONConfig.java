@@ -1,6 +1,7 @@
 package com.hx.json.config.simple;
 
 import com.hx.common.util.InnerTools;
+import com.hx.json.config.interf.JSONBeanProcessor;
 import com.hx.json.config.interf.JSONConfig;
 import com.hx.json.config.interf.JSONKeyNodeParser;
 import com.hx.json.config.interf.JSONValueNodeParser;
@@ -22,6 +23,10 @@ public class SimpleJSONConfig implements JSONConfig {
      * valueNodeParser
      */
     private JSONValueNodeParser valueNodeParser;
+    /**
+     * beanProcessor
+     */
+    private JSONBeanProcessor beanProcessor;
 
     /**
      * ≥ı ºªØ
@@ -30,15 +35,18 @@ public class SimpleJSONConfig implements JSONConfig {
      * @param valueNodeParser valueNodeParser
      * @since 1.0
      */
-    public SimpleJSONConfig(JSONKeyNodeParser keyNodeParser, JSONValueNodeParser valueNodeParser) {
+    public SimpleJSONConfig(JSONKeyNodeParser keyNodeParser, JSONValueNodeParser valueNodeParser,
+                            JSONBeanProcessor beanProcessor) {
         InnerTools.assert0(keyNodeParser != null, "'keyNodeParser' can't be null !");
         InnerTools.assert0(valueNodeParser != null, "'valueNodeParser' can't be null !");
+        InnerTools.assert0(beanProcessor != null, "'beanProcessor' can't be null !");
         this.keyNodeParser = keyNodeParser;
         this.valueNodeParser = valueNodeParser;
+        this.beanProcessor = beanProcessor;
     }
 
     public SimpleJSONConfig() {
-        this(new SimpleKeyNodeParser(), new SimpleValueNodeParser() );
+        this(new SimpleKeyNodeParser(), new SimpleValueNodeParser(), SimpleBeanProcessor.getInstance() );
     }
 
     @Override
@@ -49,5 +57,10 @@ public class SimpleJSONConfig implements JSONConfig {
     @Override
     public JSONValueNodeParser valueNodeParser() {
         return valueNodeParser;
+    }
+
+    @Override
+    public JSONBeanProcessor beanProcessor() {
+        return beanProcessor;
     }
 }

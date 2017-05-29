@@ -3,10 +3,7 @@ package com.hx.json.test;
 import com.hx.common.util.InnerTools;
 import com.hx.json.JSONObject;
 import com.hx.json.config.interf.JSONConfig;
-import com.hx.json.config.simple.JSONFieldKeyNodeParser;
-import com.hx.json.config.simple.MapKeyNodeParser;
-import com.hx.json.config.simple.SimpleJSONConfig;
-import com.hx.json.config.simple.SimpleValueNodeParser;
+import com.hx.json.config.simple.*;
 import org.junit.Test;
 
 /**
@@ -25,7 +22,7 @@ public class Test06MapKeyParser {
 
         JSONConfig config = new SimpleJSONConfig(new MapKeyNodeParser(
                 InnerTools.asMap(new String[]{"name" }, "_x_name")
-        ), new SimpleValueNodeParser());
+        ), new SimpleValueNodeParser(), SimpleBeanProcessor.getInstance());
 
         JSONObject obj = JSONObject.fromObject(json, config);
         InnerTools.log(obj.toString() );

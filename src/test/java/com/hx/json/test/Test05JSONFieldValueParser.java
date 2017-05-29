@@ -5,6 +5,7 @@ import com.hx.json.JSONObject;
 import com.hx.json.JSONParseUtils;
 import com.hx.json.config.interf.JSONConfig;
 import com.hx.json.config.simple.JSONFieldKeyNodeParser;
+import com.hx.json.config.simple.SimpleBeanProcessor;
 import com.hx.json.config.simple.SimpleJSONConfig;
 import com.hx.json.config.simple.SimpleValueNodeParser;
 import com.hx.json.interf.JSONField;
@@ -32,7 +33,8 @@ public class Test05JSONFieldValueParser {
 //        String json = "{'name':'hx', 'age':'12' }";
         User json = new User("hx", 12);
 
-        JSONConfig config = new SimpleJSONConfig(new JSONFieldKeyNodeParser(), new SimpleValueNodeParser());
+        JSONConfig config = new SimpleJSONConfig(JSONFieldKeyNodeParser.of(),
+                new SimpleValueNodeParser(), SimpleBeanProcessor.getInstance());
 
         JSONObject obj = JSONObject.fromObject(json, config);
         InnerTools.log(obj.toString() );
