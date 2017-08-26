@@ -818,7 +818,7 @@ public class JSONArray implements JSON, List, RandomAccess {
             return NULL_JSON_ARRAY;
         }
         Class argClazz = obj.getClass();
-        if(! argClazz.getClass().isArray()) {
+        if(! argClazz.isArray()) {
             return NULL_JSON_ARRAY;
         }
 

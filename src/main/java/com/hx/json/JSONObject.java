@@ -406,47 +406,78 @@ public class JSONObject implements JSON, Map {
 
     public boolean getBoolean(String key) {
         JSON val = eles.get(key);
-        if (val == null || (JSONType.BOOL != val.type())) {
+        if (val == null) {
             InnerTools.assert0("the key : " + key + " do not exists or it does not an boolean !");
         }
+        if(JSONType.BOOL == val.type()) {
+            return (Boolean) val.value();
+        }
 
-        return (Boolean) val.value();
+        return Boolean.valueOf(val.toString());
     }
 
     public int getInt(String key) {
         JSON val = eles.get(key);
-        if (val == null || (JSONType.INT != val.type())) {
+        if (val == null) {
             InnerTools.assert0("the key : " + key + " do not exists or it does not an int !");
         }
+        if(JSONType.INT == val.type()) {
+            return (Integer) val.value();
+        }
 
-        return (Integer) val.value();
+        try {
+            return Integer.valueOf(val.toString());
+        } catch (NumberFormatException e) {
+            throw e;
+        }
     }
 
     public long getLong(String key) {
         JSON val = eles.get(key);
-        if (val == null || (JSONType.LONG != val.type())) {
+        if (val == null) {
             InnerTools.assert0("the key : " + key + " do not exists or it does not an long !");
         }
+        if(JSONType.LONG == val.type()) {
+            return (Long) val.value();
+        }
 
-        return (Long) val.value();
+        try {
+            return Long.valueOf(val.toString());
+        } catch (NumberFormatException e) {
+            throw e;
+        }
     }
 
     public float getFloat(String key) {
         JSON val = eles.get(key);
-        if (val == null || (JSONType.FLOAT != val.type())) {
+        if (val == null) {
             InnerTools.assert0("the key : " + key + " do not exists or it does not an float !");
         }
+        if(JSONType.FLOAT == val.type()) {
+            return (Float) val.value();
+        }
 
-        return (Float) val.value();
+        try {
+            return Float.valueOf(val.toString());
+        } catch (NumberFormatException e) {
+            throw e;
+        }
     }
 
     public double getDouble(String key) {
         JSON val = eles.get(key);
-        if (val == null || (JSONType.DOUBLE != val.type())) {
+        if (val == null) {
             InnerTools.assert0("the key : " + key + " do not exists or it does not an double !");
         }
+        if(JSONType.DOUBLE == val.type()) {
+            return (Integer) val.value();
+        }
 
-        return (Double) val.value();
+        try {
+            return Double.valueOf(val.toString());
+        } catch (NumberFormatException e) {
+            throw e;
+        }
     }
 
     /**
@@ -533,47 +564,82 @@ public class JSONObject implements JSON, Map {
 
     public boolean optBoolean(String key, boolean defaultValue) {
         JSON val = eles.get(key);
-        if (val == null || (JSONType.BOOL != val.type())) {
+        if (val == null) {
             return defaultValue;
         }
+        if(JSONType.BOOL == val.type()) {
+            return (Boolean) val.value();
+        }
 
-        return (Boolean) val.value();
+        try {
+            return Boolean.valueOf(val.toString());
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
     }
 
     public int optInt(String key, int defaultValue) {
         JSON val = eles.get(key);
-        if (val == null || (JSONType.INT != val.type())) {
+        if (val == null) {
             return defaultValue;
         }
+        if(JSONType.INT == val.type()) {
+            return (Integer) val.value();
+        }
 
-        return (Integer) val.value();
+        try {
+            return Integer.valueOf(val.toString());
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
     }
 
     public long optLong(String key, long defaultValue) {
         JSON val = eles.get(key);
-        if (val == null || (JSONType.LONG != val.type())) {
+        if (val == null) {
             return defaultValue;
         }
+        if(JSONType.LONG == val.type()) {
+            return (Long) val.value();
+        }
 
-        return (Long) val.value();
+        try {
+            return Long.valueOf(val.toString());
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
     }
 
     public float optFloat(String key, float defaultValue) {
         JSON val = eles.get(key);
-        if (val == null || (JSONType.FLOAT != val.type())) {
+        if (val == null) {
             return defaultValue;
         }
+        if(JSONType.FLOAT == val.type()) {
+            return (Float) val.value();
+        }
 
-        return (Float) val.value();
+        try {
+            return Float.valueOf(val.toString());
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
     }
 
     public double optDouble(String key, double defaultValue) {
         JSON val = eles.get(key);
-        if (val == null || (JSONType.DOUBLE != val.type())) {
+        if (val == null) {
             return defaultValue;
         }
+        if(JSONType.DOUBLE == val.type()) {
+            return (Double) val.value();
+        }
 
-        return (Double) val.value();
+        try {
+            return Double.valueOf(val.toString());
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
     }
 
     /**

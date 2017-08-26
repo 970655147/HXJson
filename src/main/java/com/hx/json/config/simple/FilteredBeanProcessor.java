@@ -30,7 +30,15 @@ public class FilteredBeanProcessor implements JSONBeanProcessor {
      */
     private Set<String> filter;
 
-    private FilteredBeanProcessor(boolean filterBeforeToBean, boolean filterAfterFromBean, Set<String> filter) {
+    /**
+     * ≥ı ºªØ
+     *
+     * @param filterBeforeToBean  filterBeforeToBean
+     * @param filterAfterFromBean filterAfterFromBean
+     * @param filter              filter
+     * @since 1.0
+     */
+    public FilteredBeanProcessor(boolean filterBeforeToBean, boolean filterAfterFromBean, Set<String> filter) {
         this.filterBeforeToBean = filterBeforeToBean;
         this.filterAfterFromBean = filterAfterFromBean;
         this.filter = filter;
